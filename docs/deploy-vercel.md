@@ -1,10 +1,20 @@
-# Deploy no Vercel — Torres de Olinda
+Esta é a versão genérica da doc de **Deploy no Vercel**, focada na arquitetura de **Serverless Functions** com integração de banco de dados remoto (libSQL/Turso). Ela remove o contexto de "Torres de Olinda" e foca no padrão arquitetural aplicável a qualquer aplicação moderna de stack única (Monorepo ou API+Frontend).
 
-Guia completo sobre como funciona o deploy das APIs no Vercel e integração com Turso.
+---
+
+# SKILL: Vercel Deploy — Serverless Architecture & libSQL Integration
+
+**Trigram**: Deploy Vercel, Serverless Functions, Vite/React Build, Configuração de Ambiente, Ciclo de Vida da Requisição.
+
+**Objetivo**: Compreender o modelo mental de execução serverless, configurar o pipeline de deploy contínuo e garantir a integração segura entre a camada de API e o banco de dados remoto.
 
 ---
 
 ## Visão Geral da Arquitetura
+
+Em um deploy Vercel, a aplicação deixa de ser um servidor "ligado 24/7" e passa a ser um conjunto de recursos distribuídos:
+
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -12,534 +22,150 @@ Guia completo sobre como funciona o deploy das APIs no Vercel e integração com
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
 │  ┌──────────────────────────────────────────────────────┐  │
-│  │  Edge: Frontend React SPA (dist/)                    │  │
-│  │  - HTML + CSS + JS estático do Vite                 │  │
-│  │  - Servido via CDN global                           │  │
+│  │  Edge Network: Frontend SPA (Pasta dist/)            │  │
+│  │  - HTML, CSS, JS e Imagens estáticas                │  │
+│  │  - Cache global (CDN)                                │  │
 │  └────────────────┬─────────────────────────────────────┘  │
-│                   │ fetch /api/*                            │
+│                   │ chamadas HTTP /api/* │
 │  ┌────────────────▼─────────────────────────────────────┐  │
-│  │  Serverless Functions: Node.js Runtime (api/*)       │  │
-│  │  - /api/auth.js                                      │  │
-│  │  - /api/condominos.js                                │  │
-│  │  - /api/fornecedores.js                              │  │
-│  │  - /api/categorias.js                                │  │
-│  │  - /api/tags.js                                      │  │
-│  │  - /api/admin.js                                     │  │
-│  │  - /api/fornecedores/[id]/tags.js (rota dinâmica)   │  │
-│  │                                                      │  │
-│  │  Cada request = uma instância do handler             │  │
-│  │  Cold start: ~500ms; Warm: ~50ms                     │  │
+│  │  Serverless Functions: Node.js Runtime (Pasta api/*)  │  │
+│  │  - Cada arquivo .js vira um endpoint individual      │  │
+│  │  - Execução on-demand (Stateless)                    │  │
+│  │  - Cold start: ~500ms; Warm: ~50ms                   │  │
 │  └────────────────┬─────────────────────────────────────┘  │
-│                   │ @libsql/client                          │
+│                   │ Conexão via Driver (ex: @libsql/client) │
 │  ┌────────────────▼─────────────────────────────────────┐  │
-│  │  Database: Turso (SQLite remoto)                     │  │
-│  │  - TURSO_DATABASE_URL                                │  │
-│  │  - TURSO_AUTH_TOKEN                                  │  │
-│  │  - Backup automático, replicação geográfica           │  │
+│  │  External DB: Turso / SQLite Remoto                  │  │
+│  │  - Persistência de dados fora do Vercel              │  │
 │  └─────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-**Diferença chave**: Em produção, cada API é uma **serverless function** independente (não há Express server persistente). O `server.js` roda apenas em dev/Docker.
+> **Diferença Crítica**: O servidor Express (`server.js`) geralmente só é usado em desenvolvimento. Em produção, o Vercel utiliza o roteamento de arquivos dentro da pasta `api/`.
 
 ---
 
-## Como Funciona em Produção (Vercel)
+## Anatomia de uma Serverless Function
 
-### 1. Request chegando
+Ao contrário de um servidor tradicional que gerencia rotas internamente, no Vercel, o **sistema de arquivos é o roteador**.
 
-```
-Cliente (navegador) → GET https://villa-do-bosque.vercel.app/api/fornecedores
-     ↓
-Vercel routing → /api/fornecedores
-     ↓
-Node.js runtime inicia api/fornecedores.js como serverless function
-     ↓
-handler(req, res) executa
-     ↓
-Resposta JSON retorna ao cliente
-     ↓
-Serverless function encerra (sem manter estado)
-```
-
-### 2. Padrão de handler (todos os `api/*.js`)
-
-Cada arquivo em `api/` é uma **serverless function** com esta assinatura:
+### 1. O Handler Padrão
+Cada arquivo em `api/*.js` deve exportar uma função `default`:
 
 ```javascript
+// api/items.js -> Acessível em /api/items
 export default async function handler(req, res) {
-  // req = objeto com { method, body, query, headers, ... }
-  // res = objeto com { status(), json(), end(), ... }
+  const { method } = req;
 
-  if (req.method === 'GET') {
-    // lidar com GET
-    return res.status(200).json({ ... })
+  switch (method) {
+    case 'GET':
+      // Lógica de leitura
+      return res.status(200).json({ data: [] });
+    case 'POST':
+      // Lógica de criação
+      return res.status(201).json({ success: true });
+    default:
+      res.setHeader('Allow', ['GET', 'POST']);
+      return res.status(405).end(`Method ${method} Not Allowed`);
   }
-
-  if (req.method === 'POST') {
-    // lidar com POST
-    return res.status(201).json({ ... })
-  }
-
-  if (req.method === 'PUT') {
-    // lidar com PUT
-    return res.status(200).json({ ... })
-  }
-
-  return res.status(405).json({ error: 'Método não permitido' })
 }
 ```
 
-**Importante**: Ao contrário do Express, **não há `next()` ou middleware global** em serverless functions. Cada função é independente.
+### 2. Ciclo de Vida: Cold Start vs. Warm
 
-### 3. Exemplo real: `api/auth.js`
 
-```javascript
-export default async function handler(req, res) {
-  // GET: retorna dados do usuário autenticado
-  if (req.method === 'GET') {
-    const payload = verifyToken(req)
-    if (!payload) return res.status(401).json({ error: 'Token inválido' })
-    const condomino = await dbGet('SELECT * FROM condominos WHERE id = ?', payload.sub)
-    return res.status(200).json(decryptCondomino(condomino))
-  }
-
-  // POST: faz login
-  if (req.method === 'POST') {
-    const { telefone } = req.body
-    if (!telefone) return res.status(400).json({ error: 'Telefone obrigatório' })
-
-    const digits = telefone.replace(/\D/g, '')
-    const phoneHash = hash(digits)
-    let condomino = await dbGet('SELECT * FROM condominos WHERE telefone_hash = ?', phoneHash)
-
-    if (!condomino) {
-      // Criar novo usuário
-      await dbRun('INSERT INTO condominos (...) VALUES (...)', ...)
-      condomino = await dbGet('SELECT * FROM condominos WHERE telefone_hash = ?', phoneHash)
-    }
-
-    const token = signToken(condomino.id)  // JWT
-    return res.status(200).json({ ...decryptCondomino(condomino), token })
-  }
-
-  return res.status(405).end()
-}
-```
+As funções são "congeladas" quando não estão em uso. O primeiro acesso após um tempo de inatividade pode ser levemente mais lento (**Cold Start**), enquanto acessos subsequentes aproveitam a instância já ligada (**Warm**).
 
 ---
 
-## Build & Deploy Pipeline
+## Pipeline de Build e Deploy
 
-### 1. Local (npm run build)
+O Vercel utiliza um workflow baseado em Git para automatizar o ciclo de entrega.
 
-```bash
-$ npm run build
 
-> vite build
-> tsc --noEmit  (se houver typescript)
 
-✔ built 3 files in 0.5s
+### 1. Build Local (`npm run build`)
+O comando de build (geralmente do Vite) prepara o frontend:
+* Compila JSX/TypeScript.
+* Minifica CSS e JS.
+* Gera a pasta `dist/` com o conteúdo estático.
 
-dist/
-  index.html      (SPA root)
-  assets/
-    main-xxx.js   (React + Vite bundle)
-    style-xxx.css (Tailwind CSS)
-```
+### 2. Deploy no Vercel
+Ao detectar um `git push`, o Vercel:
+1. Executa o script de build definido no `package.json`.
+2. Sobe a pasta `dist/` para os servidores de borda (CDN).
+3. Transforma os scripts em `api/` em funções Lambda/Serverless.
 
-**O Vite**:
-- Bundle frontend (React, Tailwind, etc.)
-- Minifica e otimiza
-- **Não** toca em `api/*.js` (APIs ficam como está)
+---
 
-### 2. Deploy (vercel deploy ou git push)
+## Configuração: `vercel.json`
 
-Quando você faz push para GitHub (ou roda `vercel --prod`):
-
-```
-Git push → GitHub webhook → Vercel detecta
-     ↓
-Vercel inicia build
-     ↓
-$ npm run build   (Vite constrói dist/)
-     ↓
-Vercel escaneia:
-  - dist/* → assets estáticos (Edge network)
-  - api/* → serverless functions (Node.js runtime)
-     ↓
-Deploy pronto:
-  - Frontend em https://villa-do-bosque.vercel.app/
-  - API em https://villa-do-bosque.vercel.app/api/*
-```
-
-### 3. Arquivo de configuração: `vercel.json`
+Este arquivo controla como o Vercel interpreta seu projeto.
 
 ```json
 {
-  "buildCommand": "npm run build",         // Qual comando rodar
-  "outputDirectory": "dist",                // Onde fica o build
-  "framework": "vite",                      // Detecção automática
-  "headers": [ ... ],                       // Security headers
-  "rewrites": [ ... ]                       // URL rewrites (explicado abaixo)
-}
-```
-
----
-
-## Roteamento & Rewrites
-
-### Como URLs são roteadas em Vercel
-
-```
-https://villa-do-bosque.vercel.app/api/auth
-     ↓ (vercel.json rewrites)
-→ /api/auth.js (serverless function)
-```
-
-```
-https://villa-do-bosque.vercel.app/api/admin/usuarios
-     ↓ (vercel.json rewrites)
-→ /api/admin?route=usuarios
-  (redireciona para api/admin.js com query param)
-```
-
-```
-https://villa-do-bosque.vercel.app/
-     ↓ (vercel.json rewrites)
-→ /index.html (SPA root, fallback)
-
-https://villa-do-bosque.vercel.app/admin/moderar
-     ↓ (não é /api/*, cai no fallback)
-→ /index.html (React Router DOM pega de lá)
-```
-
-### Rewrite para admin dinâmico
-
-```json
-{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
   "rewrites": [
-    { "source": "/api/admin/:route", "destination": "/api/admin?route=:route" }
+    { 
+      "source": "/api/resource/:id", 
+      "destination": "/api/resource.js?id=:id" 
+    },
+    { 
+      "source": "/(.*)", 
+      "destination": "/index.html" 
+    }
   ]
 }
 ```
-
-**Por quê?**: Admin tem um handler genérico (`api/admin.js`) que lida com múltiplas sub-rotas:
-- `/api/admin/usuarios` → `api/admin.js` recebe `req.query.route = 'usuarios'`
-- `/api/admin/fornecedores` → `api/admin.js` recebe `req.query.route = 'fornecedores'`
+* **Rewrites de API**: Permite criar rotas dinâmicas ou amigáveis sem mudar a estrutura de arquivos.
+* **SPA Fallback**: Garante que rotas do Frontend (ex: `/dashboard`) sejam tratadas pelo React Router dentro do `index.html`.
 
 ---
 
-## Variáveis de Ambiente em Produção
+## Gerenciamento de Variáveis de Ambiente
 
-### Configurar no Vercel Dashboard
+As variáveis de ambiente são cruciais para a segurança, pois impedem que segredos (como senhas de banco) fiquem no código.
 
-1. Acesse projeto no Vercel
-2. Settings → **Environment Variables**
-3. Adicione cada variável:
+| Variável | Exemplo de Uso |
+| :--- | :--- |
+| `DATABASE_URL` | String de conexão com o Turso/libSQL. |
+| `AUTH_SECRET` | Chave para assinar tokens JWT. |
+| `API_KEY` | Credenciais de serviços de terceiros (E-mail, SMS). |
 
-| Variável | Valor | Escopo |
-|----------|-------|--------|
-| `ENCRYPTION_KEY` | 32+ chars aleatórios | Production |
-| `JWT_SECRET` | 32+ chars aleatórios | Production |
-| `TURSO_DATABASE_URL` | `libsql://xxxxx.turso.io` | Production |
-| `TURSO_AUTH_TOKEN` | `eyJ...` | Production |
-| `INITIAL_ADMIN_PHONE` | `+55159999...` (opcional) | Production |
-
-### Verificar no CLI
-
-```bash
-vercel env list                    # Listar variáveis
-vercel env add ENCRYPTION_KEY production  # Adicionar interativamente
-vercel env pull                    # Puxar para .env.local (dev)
-```
-
-### Acesso dentro das funções
-
-```javascript
-// Em qualquer api/*.js
-const key = process.env.ENCRYPTION_KEY
-const dbUrl = process.env.TURSO_DATABASE_URL
-const token = process.env.TURSO_AUTH_TOKEN
-
-if (!key || !dbUrl || !token) {
-  throw new Error('Variáveis de ambiente faltando')
-}
-```
+### Como configurar:
+1. No Dashboard do Vercel: `Project Settings` > `Environment Variables`.
+2. No CLI: `vercel env add NAME_OF_VAR`.
+3. Localmente: Use um arquivo `.env` (nunca o envie para o Git).
 
 ---
 
-## Fluxo Completo: Login + Criar Fornecedor
+## Comparação: Docker/Local vs. Vercel
 
-### Passo 1: Login (POST /api/auth)
-
-```javascript
-// Frontend (src/lib/api.js)
-const response = await fetch('/api/auth', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ telefone: '5515999999999' })
-})
-const { token, nivel } = await response.json()
-localStorage.setItem('villa_session', JSON.stringify({ token }))
-```
-
-```javascript
-// Backend (api/auth.js)
-export default async function handler(req, res) {
-  if (req.method === 'POST') {
-    const { telefone } = req.body
-    const phoneHash = hash(telefone.replace(/\D/g, ''))
-    
-    // Buscar ou criar
-    let condomino = await dbGet(
-      'SELECT * FROM condominos WHERE telefone_hash = ? AND deleted_at IS NULL',
-      phoneHash
-    )
-    if (!condomino) {
-      await dbRun(
-        'INSERT INTO condominos (telefone, telefone_hash, role) VALUES (?, ?, ?)',
-        encrypt(telefone),
-        phoneHash,
-        'condomino'
-      )
-      condomino = await dbGet('SELECT * FROM condominos WHERE telefone_hash = ?', phoneHash)
-    }
-
-    // Gerar JWT
-    const token = signToken(condomino.id)  // JWT com { sub: condomino.id, exp: ... }
-    
-    // Audit
-    await audit(req, { action: 'login', entity: 'condomino', entityId: condomino.id })
-
-    return res.status(200).json({
-      id: condomino.id,
-      nivel: condomino.nivel,
-      token
-    })
-  }
-}
-```
-
-**O que acontece**:
-1. Serverless function inicia
-2. Query: `SELECT` usuario por telefone_hash
-3. Se não existe: `INSERT` novo usuario
-4. Gera JWT `eyJ...` (válido por 7 dias)
-5. Registra auditoria em `audit_log`
-6. Retorna token ao cliente
-7. Cliente salva em `localStorage`
-8. Serverless function encerra
-
-### Passo 2: Criar Fornecedor (POST /api/fornecedores)
-
-```javascript
-// Frontend (src/components/NovoFornecedor.jsx)
-const token = localStorage.getItem('villa_session').token
-const response = await fetch('/api/fornecedores', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`  // ← JWT
-  },
-  body: JSON.stringify({
-    nome: 'Dirley',
-    telefone: '5515997194756',
-    categorias: [1, 2],  // IDs de categorias
-    tags: ['bom preço', 'rápido']  // nomes de tags
-  })
-})
-```
-
-```javascript
-// Backend (api/fornecedores.js)
-export default async function handler(req, res) {
-  if (req.method === 'POST') {
-    // 1) Verificar autenticação
-    const ctx = await requirePrata(req, res)
-    if (!ctx) return  // Resposta já enviada (401/403)
-    const { user } = ctx  // { id, role, nivel }
-
-    // 2) Validar input
-    const { nome, telefone, descricao, categorias, tags } = req.body
-    if (!nome || !telefone) return res.status(400).json({ error: 'Faltam campos' })
-
-    // 3) Criptografar dados sensíveis
-    const encNome = encrypt(nome)
-    const encTelefone = encrypt(telefone)
-    const encDescricao = encrypt(descricao)
-
-    // 4) Inserir fornecedor
-    const { lastInsertRowid } = await dbRun(
-      'INSERT INTO fornecedores (nome, telefone, descricao, indicado_por) VALUES (?, ?, ?, ?)',
-      encNome,
-      encTelefone,
-      encDescricao,
-      user.id  // Quem criou
-    )
-    const fornecedorId = Number(lastInsertRowid)
-
-    // 5) Inserir categorias
-    for (const catId of categorias) {
-      await dbRun(
-        'INSERT INTO fornecedor_categorias (fornecedor_id, categoria_id) VALUES (?, ?)',
-        fornecedorId,
-        catId
-      )
-    }
-
-    // 6) Inserir tags (com status 'pendente' se novas)
-    for (const tagNome of tags) {
-      let tag = await dbGet('SELECT id FROM tags WHERE nome = ?', tagNome)
-      if (!tag) {
-        // Tag nova = pendente
-        await dbRun(
-          'INSERT INTO tags (nome, status) VALUES (?, ?)',
-          tagNome,
-          'pendente'
-        )
-        tag = await dbGet('SELECT id FROM tags WHERE nome = ?', tagNome)
-      }
-      await dbRun(
-        'INSERT INTO fornecedor_tags (fornecedor_id, tag_id) VALUES (?, ?)',
-        fornecedorId,
-        tag.id
-      )
-    }
-
-    // 7) Audit
-    await audit(req, {
-      action: 'criar',
-      entity: 'fornecedor',
-      entityId: fornecedorId,
-      details: JSON.stringify({ nome, telefone })
-    })
-
-    return res.status(201).json({ id: fornecedorId })
-  }
-}
-```
-
-**O que acontece**:
-1. Serverless function inicia
-2. Verifica JWT no header `Authorization: Bearer ...`
-3. Valida role/nivel (é `prata` ou `super`?)
-4. Valida dados de entrada
-5. **Múltiplas queries** (INSERT fornecedor, INSERT categorias, INSERT tags)
-6. Registra auditoria
-7. Retorna `{ id }`
-8. Serverless function encerra
+| Característica | Local (Node/Docker) | Produção (Vercel) |
+| :--- | :--- | :--- |
+| **Persistência em Memória** | Sim (Variáveis globais funcionam) | Não (Funções são destruídas após o uso) |
+| **Roteamento** | Gerenciado pelo Express/Fastify | Gerenciado pelo Sistema de Arquivos |
+| **Banco de Dados** | SQLite local (arquivo `.db`) | Banco Remoto (Turso via libSQL) |
+| **Tempo de Execução** | Infinito (ou até crashar) | Geralmente limitado a 10s-60s |
 
 ---
 
-## Diferenças: Docker/Local vs Vercel
+## Checklist de Deploy em Produção
 
-| Aspecto | Docker/Local (server.js) | Vercel (serverless) |
-|---------|--------------------------|-------------------|
-| **Startup** | Express app roda uma vez | Cada request = novo handler |
-| **Middleware** | Global (app.use) | Em cada function |
-| **Estado persistente** | Variáveis locais | ❌ Não existe (stateless) |
-| **Conexão BD** | Aberta continuamente | Nova conexão por request |
-| **Timeout** | Sem limite | 60s (função) |
-| **Cold start** | 0 (sempre warm) | ~500ms (primeira vez) |
-| **Scale** | Manual | Automático (Vercel) |
+Antes de considerar o deploy como concluído, verifique:
+
+- [ ] **Variáveis de Ambiente**: Todas as chaves do `.env` local foram replicadas no painel do Vercel?
+- [ ] **Build Check**: O comando `npm run build` roda localmente sem erros de lint ou tipos?
+- [ ] **Conexão com Banco**: A URL do banco remoto (`libsql://...`) está correta e com o token de autenticação?
+- [ ] **Rewrites**: O `vercel.json` está configurado para não quebrar o roteamento do frontend (SPA)?
+- [ ] **Segurança**: As funções sensíveis (POST/PUT/DELETE) possuem verificação de token ou permissão?
 
 ---
 
-## Troubleshooting
+### Referências Úteis
+* [Vercel Serverless Functions Documentation](https://vercel.com/docs/functions)
+* [libSQL JS SDK Guide](https://docs.turso.tech/sdk/js)
+* [Vite Production Guide](https://vitejs.dev/guide/build.html)
 
-### 1) "Cannot find module" em produção
-
-**Causa**: Dependências não foram instaladas.
-
-**Solução**:
-```bash
-npm install          # Local
-vercel redeploy      # Force rebuild em Vercel
-```
-
-### 2) "Token inválido" após deploy
-
-**Causa**: `JWT_SECRET` mudou ou não está sincronizado.
-
-**Solução**:
-```bash
-# Verificar JWT_SECRET em Vercel
-vercel env list
-
-# Confirmar que é a mesma localmente
-cat .env | grep JWT_SECRET
-
-# Se diferente, atualizar
-vercel env add JWT_SECRET production  # Remove a antiga, adiciona nova
-vercel redeploy
-```
-
-### 3) Banco de dados vazio em produção
-
-**Causa**: Turso não foi configurado ou `ensureDb()` não rodou.
-
-**Solução**:
-```bash
-# 1) Verificar TURSO_DATABASE_URL no Vercel
-vercel env list
-
-# 2) Testar conexão
-node -e "import('./api/_db.js').then(m => m.ensureDb()).then(() => console.log('OK'))"
-
-# 3) Se schema está vazio, rodar migrate
-node scripts/migrate-to-turso.js
-```
-
-### 4) Cold start muito lento (>3s)
-
-**Causa**: Bundle grande ou timeout de conexão ao Turso.
-
-**Solução**:
-- Verificar tamanho do bundle: `npm run build && du -sh dist/`
-- Aumentar timeout de conexão no `api/_db.js`
-- Usar Turso regional mais próximo
-
-### 5) "Vercel Functions size exceeded 50MB"
-
-**Causa**: `node_modules` muito grande.
-
-**Solução**:
-```json
-// vercel.json
-{
-  "functions": {
-    "api/**/*.js": {
-      "runtime": "nodejs18.x"
-    }
-  }
-}
-```
-
----
-
-## Checklist: Antes de Deploy em Produção
-
-- [ ] `npm run check` passa (lint + testes)
-- [ ] `npm run build` sem erros
-- [ ] Variáveis de ambiente configuradas no Vercel:
-  - [ ] `ENCRYPTION_KEY` (32+ chars)
-  - [ ] `JWT_SECRET` (32+ chars, diferente de `ENCRYPTION_KEY`)
-  - [ ] `TURSO_DATABASE_URL` (libsql://...)
-  - [ ] `TURSO_AUTH_TOKEN` (token do Turso)
-  - [ ] `INITIAL_ADMIN_PHONE` (opcional, apenas primeira vez)
-- [ ] Dados migrados ao Turso (via `scripts/migrate-to-turso.js`)
-- [ ] Backup local feito (`/tmp/condominio_backup.db`)
-- [ ] Testes de integração passando contra Turso (não só SQLite local)
-- [ ] URLs de API adicionadas ao CORS (se aplicável)
-- [ ] Security headers presentes no `vercel.json`
-
----
-
-## Referências
-
-- [Vercel Functions Docs](https://vercel.com/docs/functions/serverless-functions)
-- [Node.js Runtime](https://vercel.com/docs/functions/runtimes/node-js)
-- [Environment Variables](https://vercel.com/docs/projects/environment-variables)
-- [Rewrites & Redirects](https://vercel.com/docs/edge-middleware/redirects)
-- Projeto: `vercel.json`, `api/*.js`, `server.js`, `docs/checklists.md`
+Dada a natureza **stateless** (sem estado) das Serverless Functions, como você planeja gerenciar sessões de usuário ou cache de dados sem depender de variáveis globais no servidor?
