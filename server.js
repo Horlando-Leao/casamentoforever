@@ -29,7 +29,6 @@ async function createTables() {
       CREATE TABLE IF NOT EXISTS tenants (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         slug TEXT UNIQUE NOT NULL,
-        nome TEXT NOT NULL,
         nome1 TEXT,
         nome2 TEXT,
         created_at TEXT DEFAULT (datetime('now'))
@@ -63,6 +62,23 @@ async function createTables() {
         FOREIGN KEY (user_id) REFERENCES users(id)
       )
     `);
+
+    // Migrations: sincronizar schema do banco com a versão atual
+    const tenantsInfo = await db.execute('PRAGMA table_info(tenants)');
+    const columnNames = tenantsInfo.rows.map(row => row.name);
+
+    if (!columnNames.includes('nome1')) {
+      await db.execute('ALTER TABLE tenants ADD COLUMN nome1 TEXT');
+      console.log('✓ Migration: coluna nome1 adicionada à tabela tenants');
+    }
+    if (!columnNames.includes('nome2')) {
+      await db.execute('ALTER TABLE tenants ADD COLUMN nome2 TEXT');
+      console.log('✓ Migration: coluna nome2 adicionada à tabela tenants');
+    }
+    if (columnNames.includes('nome')) {
+      await db.execute('ALTER TABLE tenants DROP COLUMN nome');
+      console.log('✓ Migration: coluna nome removida da tabela tenants');
+    }
 
     console.log('✓ Tables created successfully');
   } catch (error) {
@@ -181,11 +197,18 @@ app.post('/api/:tenant/auth/register', async (req, res) => {
     
     if (!tenant) {
       const insertResult = await db.execute({
-        sql: 'INSERT INTO tenants (slug, nome, nome1, nome2) VALUES (?, ?, ?, ?)',
-        args: [tenantSlug, tenantSlug, nome1 || '', nome2 || ''],
+        sql: 'INSERT INTO tenants (slug, nome1, nome2) VALUES (?, ?, ?)',
+        args: [tenantSlug, nome1 || '', nome2 || ''],
       });
       const tenantId = parseInt(insertResult.lastInsertRowid) || 1;
-      tenant = { id: tenantId, slug: tenantSlug, nome: tenantSlug, nome1: nome1 || '', nome2: nome2 || '' };
+      tenant = { id: tenantId, slug: tenantSlug, nome1: nome1 || '', nome2: nome2 || '' };
+    } else if ((!tenant.nome1 || !tenant.nome2) && (nome1 || nome2)) {
+      // Atualiza os nomes caso o tenant já exista mas esteja sem eles
+      await db.execute({
+        sql: 'UPDATE tenants SET nome1 = ?, nome2 = ? WHERE id = ?',
+        args: [nome1 || tenant.nome1 || '', nome2 || tenant.nome2 || '', tenant.id],
+      });
+      tenant = { ...tenant, nome1: nome1 || tenant.nome1 || '', nome2: nome2 || tenant.nome2 || '' };
     }
     
     // Check if user already exists
@@ -213,7 +236,13 @@ app.post('/api/:tenant/auth/register', async (req, res) => {
       email,
     });
     
-    res.status(201).json({ token, user: { id: userId, email } });
+    res.status(201).json({
+      token,
+      tenant: tenant.slug,
+      nome1: tenant.nome1 || '',
+      nome2: tenant.nome2 || '',
+      user: { id: userId, email },
+    });
   } catch (error) {
     console.error('Register error:', error?.message || error);
     res.status(500).json({ error: error?.message || 'Internal server error' });
@@ -374,7 +403,7 @@ app.post('/api/:tenant/gifts', authMiddleware, async (req, res) => {
     });
     
     const gift = {
-      id: insertResult.lastInsertRowid,
+      id: Number(insertResult.lastInsertRowid),
       tenant_id: req.user.tenantId,
       user_id: req.user.userId,
       nome,

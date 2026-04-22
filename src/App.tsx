@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getToken, logout, getNames } from './services/api';
+import { getToken, logout, getNames, getTenant } from './services/api';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -16,18 +16,28 @@ function App() {
 
   useEffect(() => {
     const token = getToken();
+    const storedTenant = getTenant();
     setIsAuthenticated(!!token);
+
     if (token) {
       const storedNames = getNames();
       setNamesState(storedNames);
+      if (storedTenant) setTenant(storedTenant);
     }
     
-    const hash = window.location.hash.slice(1) || '/';
+    const rawHash = window.location.hash.slice(1) || '/';
+    const hash = rawHash.startsWith('/') ? rawHash.slice(1) : rawHash;
     const parts = hash.split('/');
     
-    if (hash === '/' || hash === '/login') {
+    // Redirecionamento automático se logado
+    if (token && storedTenant && (hash === '' || hash === 'login' || hash === 'register')) {
+      navigateTo('dashboard', storedTenant);
+      return;
+    }
+
+    if (hash === '' || hash === 'login') {
       setCurrentPage('login');
-    } else if (hash === '/register') {
+    } else if (hash === 'register') {
       setCurrentPage('register');
     } else if (parts[1] === 'dashboard' && parts[0]) {
       setTenant(parts[0]);
@@ -110,6 +120,7 @@ function App() {
       )}
       {currentPage === 'gift-form' && tenant && (
         <GiftForm 
+          key={giftId || 'new'}
           tenant={tenant}
           giftId={giftId}
           onSave={() => navigateTo('dashboard', tenant)}
@@ -120,7 +131,6 @@ function App() {
         <GiftDetail 
           tenant={tenant}
           giftId={giftId}
-          onEdit={() => navigateTo('gift-form', tenant, giftId)}
           onDelete={() => navigateTo('dashboard', tenant)}
           onBack={() => navigateTo('dashboard', tenant)}
         />

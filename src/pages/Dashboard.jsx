@@ -24,14 +24,14 @@ export default function Dashboard({ tenant, names, onLogout, onNewGift, onEditGi
       const data = await getGifts(tenant);
       setGifts(data.gifts);
     } catch (err) {
-      setError(err.message || 'Failed to load gifts');
+      setError(err.message || 'Falha ao carregar presentes');
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this gift?')) {
+    if (!window.confirm('Tem certeza que deseja excluir este presente?')) {
       return;
     }
 
@@ -39,7 +39,7 @@ export default function Dashboard({ tenant, names, onLogout, onNewGift, onEditGi
       await deleteGift(tenant, id);
       setGifts(gifts.filter(g => g.id !== id));
     } catch (err) {
-      setError(err.message || 'Failed to delete gift');
+      setError(err.message || 'Falha ao excluir presente');
     }
   };
 
@@ -50,13 +50,13 @@ export default function Dashboard({ tenant, names, onLogout, onNewGift, onEditGi
         <div className="max-w-6xl mx-auto px-4 py-6 flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-display text-rose-gold">💍 {formatNames()}</h1>
-            <p className="text-sm text-gray-600">Your gift registry</p>
+            <p className="text-sm text-gray-600">Lista de presentes</p>
           </div>
           <button
             onClick={onLogout}
             className="px-4 py-2 text-gold font-semibold hover:text-rose-gold"
           >
-            Logout
+            Sair
           </button>
         </div>
       </header>
@@ -71,7 +71,7 @@ export default function Dashboard({ tenant, names, onLogout, onNewGift, onEditGi
 
         {loading ? (
           <div className="text-center py-12">
-            <p className="text-gray-600">Loading gifts...</p>
+            <p className="text-gray-600">Carregando presentes...</p>
           </div>
         ) : (
           <>
@@ -81,19 +81,19 @@ export default function Dashboard({ tenant, names, onLogout, onNewGift, onEditGi
                 onClick={onNewGift}
                 className="flex items-center gap-2 bg-gold hover:bg-gold/90 text-white font-semibold py-2 px-6 rounded-lg transition"
               >
-                ＋ New Gift
+                ＋ Novo Presente
               </button>
             </div>
 
             {/* Gifts Grid */}
             {gifts.length === 0 ? (
               <div className="text-center py-16">
-                <p className="text-lg text-gray-600 mb-6">No gifts yet</p>
+                <p className="text-lg text-gray-600 mb-6">Nenhum presente cadastrado ainda</p>
                 <button
                   onClick={onNewGift}
                   className="inline-flex items-center gap-2 bg-gold hover:bg-gold/90 text-white font-semibold py-2 px-6 rounded-lg transition"
                 >
-                  Create your first gift
+                  Adicione seu primeiro presente
                 </button>
               </div>
             ) : (

@@ -28,6 +28,18 @@ function clearNames() {
   localStorage.removeItem('nome2');
 }
 
+function getTenant() {
+  return localStorage.getItem('tenant');
+}
+
+function setTenant(tenant) {
+  localStorage.setItem('tenant', tenant);
+}
+
+function clearTenant() {
+  localStorage.removeItem('tenant');
+}
+
 function generateSlug(nome1, nome2) {
   const normalize = (str) => 
     str
@@ -73,19 +85,19 @@ async function apiCall(endpoint, options = {}) {
 }
 
 // Auth
-export async function register(nome1, nome2, email, senha, sendNames = false) {
+export async function register(nome1, nome2, email, senha) {
   const tenant = generateSlug(nome1, nome2);
-  const body = sendNames 
-    ? { email, senha, nome1, nome2 }
-    : { email, senha };
   
   const data = await apiCall(`/${tenant}/auth/register`, {
     method: 'POST',
-    body: JSON.stringify(body),
+    body: JSON.stringify({ email, senha, nome1, nome2 }),
   });
   setToken(data.token);
-  setNames(nome1, nome2);
-  return tenant;
+  // Usar os nomes retornados pelo servidor (fonte da verdade)
+  setNames(data.nome1 || nome1, data.nome2 || nome2);
+  const finalTenant = data.tenant || tenant;
+  setTenant(finalTenant);
+  return finalTenant;
 }
 
 export async function login(email, senha) {
@@ -97,6 +109,7 @@ export async function login(email, senha) {
   
   setToken(result.token);
   setNames(result.nome1, result.nome2);
+  setTenant(result.tenant);
   return result.tenant;
 }
 
@@ -107,6 +120,7 @@ export async function getCurrentUser(tenant) {
 export function logout() {
   clearToken();
   clearNames();
+  clearTenant();
 }
 
 // Gifts
@@ -138,4 +152,4 @@ export async function deleteGift(tenant, id) {
   });
 }
 
-export { getToken, setToken, clearToken, getNames, setNames, clearNames };
+export { getToken, setToken, clearToken, getNames, setNames, clearNames, getTenant, setTenant, clearTenant };

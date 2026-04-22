@@ -26,7 +26,7 @@ export default function GiftForm({ tenant, giftId, onSave, onCancel }) {
       setChavePix(gift.chave_pix || '');
       setSites(gift.sites || []);
     } catch (err) {
-      setError(err.message || 'Failed to load gift');
+      setError(err.message || 'Falha ao carregar presente');
     } finally {
       setLoading(false);
     }
@@ -55,7 +55,7 @@ export default function GiftForm({ tenant, giftId, onSave, onCancel }) {
 
     try {
       if (!nome) {
-        setError('Gift name is required');
+        setError('O nome do presente é obrigatório');
         return;
       }
 
@@ -74,7 +74,7 @@ export default function GiftForm({ tenant, giftId, onSave, onCancel }) {
 
       onSave();
     } catch (err) {
-      setError(err.message || 'Failed to save gift');
+      setError(err.message || 'Falha ao salvar presente');
     } finally {
       setSaving(false);
     }
@@ -83,7 +83,7 @@ export default function GiftForm({ tenant, giftId, onSave, onCancel }) {
   if (loading) {
     return (
       <div className="min-h-screen bg-cream flex items-center justify-center">
-        <p className="text-gray-600">Loading...</p>
+        <p className="text-gray-600">Carregando...</p>
       </div>
     );
   }
@@ -94,7 +94,7 @@ export default function GiftForm({ tenant, giftId, onSave, onCancel }) {
       <header className="bg-white border-b border-gold border-opacity-20 shadow-sm">
         <div className="max-w-2xl mx-auto px-4 py-6">
           <h1 className="text-3xl font-display text-rose-gold">
-            {giftId ? 'Edit Gift' : 'New Gift'}
+            {giftId ? 'Editar Presente' : 'Novo Presente'}
           </h1>
         </div>
       </header>
@@ -111,13 +111,13 @@ export default function GiftForm({ tenant, giftId, onSave, onCancel }) {
           {/* Gift Name */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Gift Name *
+              Nome do Presente *
             </label>
             <input
               type="text"
               value={nome}
               onChange={(e) => setNome(e.target.value)}
-              placeholder="e.g., KitchenAid Mixer"
+              placeholder="Ex: Batedeira KitchenAid"
               className="w-full px-4 py-2 border border-gold border-opacity-30 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent outline-none"
               required
             />
@@ -126,7 +126,7 @@ export default function GiftForm({ tenant, giftId, onSave, onCancel }) {
           {/* Image URL */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Image URL
+              URL da Imagem
             </label>
             <input
               type="url"
@@ -148,7 +148,7 @@ export default function GiftForm({ tenant, giftId, onSave, onCancel }) {
               type="text"
               value={chavePix}
               onChange={(e) => setChavePix(e.target.value)}
-              placeholder="xxx@example.com or key"
+              placeholder="xxx@exemplo.com ou chave"
               className="w-full px-4 py-2 border border-gold border-opacity-30 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent outline-none"
             />
           </div>
@@ -156,7 +156,7 @@ export default function GiftForm({ tenant, giftId, onSave, onCancel }) {
           {/* Shopping Sites */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-4">
-              Shopping Sites (up to 3)
+              Links para compra (até 3)
             </label>
 
             {sites.map((site, index) => (
@@ -182,7 +182,7 @@ export default function GiftForm({ tenant, giftId, onSave, onCancel }) {
                   onClick={() => handleRemoveSite(index)}
                   className="text-sm text-red-600 hover:text-red-700 font-semibold"
                 >
-                  ✕ Remove
+                  ✕ Remover
                 </button>
               </div>
             ))}
@@ -193,7 +193,7 @@ export default function GiftForm({ tenant, giftId, onSave, onCancel }) {
                 onClick={handleAddSite}
                 className="text-sm text-gold font-semibold hover:text-rose-gold"
               >
-                + Add Site
+                + Adicionar link
               </button>
             )}
           </div>
@@ -205,14 +205,14 @@ export default function GiftForm({ tenant, giftId, onSave, onCancel }) {
               onClick={onCancel}
               className="px-6 py-2 text-gold font-semibold hover:text-rose-gold"
             >
-              Cancel
+              Cancelar
             </button>
             <button
               type="submit"
               disabled={saving}
               className="px-6 py-2 bg-gold hover:bg-gold/90 disabled:bg-gray-400 text-white font-semibold rounded-lg transition"
             >
-              {saving ? 'Saving...' : 'Save Gift'}
+              {saving ? 'Salvando...' : 'Salvar Presente'}
             </button>
           </div>
         </form>
@@ -222,7 +222,7 @@ export default function GiftForm({ tenant, giftId, onSave, onCancel }) {
             onClick={onCancel}
             className="text-gold font-semibold hover:text-rose-gold"
           >
-            ← Back
+            ← Voltar
           </button>
         </div>
       </main>

@@ -24,7 +24,7 @@ export default function Register({ onRegisterSuccess, onLoginClick }) {
         setError('As senhas não correspondem');
         return;
       }
-      const tenant = await register(nome1, nome2, email, senha, true);
+      const tenant = await register(nome1, nome2, email, senha);
       onRegisterSuccess(tenant);
     } catch (err) {
       setError(err.message || 'Falha ao registrar');
