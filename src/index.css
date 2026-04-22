@@ -1,41 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: 214 100% 97%;
-  --foreground: 222 47% 11%;
-  --card: 0 0% 100%;
-  --card-foreground: 222 47% 11%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 222 47% 11%;
-  --primary: 217 91% 60%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 214 32% 91%;
-  --secondary-foreground: 222 47% 11%;
-  --muted: 214 32% 91%;
-  --muted-foreground: 215 16% 47%;
-  --border: 214 32% 91%;
-  --input: 214 32% 91%;
-  --ring: 217 91% 60%;
-  --radius: 0.75rem;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
 body {
-  @apply min-h-screen bg-background text-foreground antialiased;
+  @apply min-h-screen bg-cream text-text-primary antialiased;
+  font-family: 'Lato', sans-serif;
 }
 
-button,
-input,
-textarea,
-select {
-  font: inherit;
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Playfair Display', serif;
 }
 
+.font-display {
+  font-family: 'Playfair Display', serif;
+}
+
+.font-body {
+  font-family: 'Lato', sans-serif;
+}
+
+/* Buttons */
+button:focus-visible {
+  @apply outline-none ring-2 ring-gold ring-offset-2;
+}
+
+/* Inputs */
+input:focus,
+textarea:focus,
+select:focus {
+  @apply outline-none ring-2 ring-gold ring-offset-1;
+  border-color: rgb(201, 168, 76);
+}
+
+/* Safe Area */
 @layer utilities {
   .pt-safe {
     padding-top: max(env(safe-area-inset-top), 1rem);
@@ -46,5 +45,14 @@ select {
   .px-safe {
     padding-left: max(env(safe-area-inset-left), 1rem);
     padding-right: max(env(safe-area-inset-right), 1rem);
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

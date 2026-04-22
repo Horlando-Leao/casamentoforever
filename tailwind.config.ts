@@ -1,33 +1,22 @@
 import type { Config } from 'tailwindcss'
 
 export default {
-  darkMode: ['class'],
-  content: ['./index.html', './src/**/*.{ts,tsx}'],
+  content: ['./index.html', './src/**/*.{ts,tsx,js,jsx}'],
   theme: {
     extend: {
       colors: {
-        border: 'hsl(var(--border))',
-        input: 'hsl(var(--input))',
-        ring: 'hsl(var(--ring))',
-        background: 'hsl(var(--background))',
-        foreground: 'hsl(var(--foreground))',
-        primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))',
-        },
-        secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))',
-        },
-        muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))',
-        },
+        // Wedding theme colors
+        cream: '#FAF7F2',
+        gold: '#C9A84C',
+        'rose-gold': '#B76E79',
+        // Text colors
+        'text-primary': '#333333',
+        'text-secondary': '#666666',
+        'text-light': '#999999',
       },
-      borderRadius: {
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
+      fontFamily: {
+        display: ['Playfair Display', 'serif'],
+        body: ['Lato', 'sans-serif'],
       },
     },
   },
