@@ -5,6 +5,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import GiftForm from './pages/GiftForm';
 import GiftDetail from './pages/GiftDetail';
+import PublicGiftList from './pages/PublicGiftList';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('login');
@@ -54,6 +55,9 @@ function App() {
       setTenant(parts[0]);
       setGiftId(parts[2]);
       setCurrentPage('gift-form');
+    } else if (parts[1] === 'lista' && parts[0]) {
+      setTenant(parts[0]);
+      setCurrentPage('public-list');
     }
   }, []);
 
@@ -134,6 +138,9 @@ function App() {
           onDelete={() => navigateTo('dashboard', tenant)}
           onBack={() => navigateTo('dashboard', tenant)}
         />
+      )}
+      {currentPage === 'public-list' && tenant && (
+        <PublicGiftList tenant={tenant} />
       )}
     </div>
   );

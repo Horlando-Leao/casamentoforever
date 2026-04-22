@@ -56,6 +56,9 @@ async function createTables() {
         imagem_url TEXT,
         chave_pix TEXT,
         sites TEXT DEFAULT '[]',
+        reserved_by_name TEXT,
+        reserved_by_whatsapp TEXT,
+        reserved_at TEXT,
         created_at TEXT DEFAULT (datetime('now')),
         updated_at TEXT DEFAULT (datetime('now')),
         FOREIGN KEY (tenant_id) REFERENCES tenants(id),
@@ -78,6 +81,15 @@ async function createTables() {
     if (columnNames.includes('nome')) {
       await db.execute('ALTER TABLE tenants DROP COLUMN nome');
       console.log('✓ Migration: coluna nome removida da tabela tenants');
+    }
+
+    const giftsInfo = await db.execute('PRAGMA table_info(gifts)');
+    const giftCols = giftsInfo.rows.map(r => r.name);
+    if (!giftCols.includes('reserved_by_name')) {
+      await db.execute('ALTER TABLE gifts ADD COLUMN reserved_by_name TEXT');
+      await db.execute('ALTER TABLE gifts ADD COLUMN reserved_by_whatsapp TEXT');
+      await db.execute('ALTER TABLE gifts ADD COLUMN reserved_at TEXT');
+      console.log('✓ Migration: colunas de reserva adicionadas à tabela gifts');
     }
 
     console.log('✓ Tables created successfully');
@@ -365,6 +377,100 @@ app.get('/api/:tenant/auth/me', authMiddleware, async (req, res) => {
 });
 
 // ============ GIFTS ROUTES ============
+
+// GET /api/:tenant/public/gifts
+app.get('/api/:tenant/public/gifts', async (req, res) => {
+  try {
+    const tenantSlug = req.params.tenant;
+    const tenant = await getTenantBySlug(tenantSlug);
+    
+    if (!tenant) return res.status(404).json({ error: 'Tenant not found' });
+
+    const result = await db.execute({
+      sql: 'SELECT * FROM gifts WHERE tenant_id = ? ORDER BY created_at DESC',
+      args: [tenant.id]
+    });
+
+    const gifts = result.rows.map(gift => {
+      const isReserved = !!gift.reserved_by_whatsapp;
+      return {
+        id: gift.id,
+        nome: gift.nome,
+        imagem_url: gift.imagem_url,
+        // Omitir chave pix e sites se estiver reservado, e retornar flag reserved
+        chave_pix: isReserved ? null : gift.chave_pix,
+        sites: isReserved ? [] : JSON.parse(gift.sites || '[]'),
+        reserved: isReserved,
+      };
+    });
+
+    res.json({ gifts });
+  } catch (error) {
+    console.error('Get public gifts error:', error?.message || error);
+    res.status(500).json({ error: error?.message || 'Internal server error' });
+  }
+});
+
+// POST /api/:tenant/public/gifts/:id/reserve
+app.post('/api/:tenant/public/gifts/:id/reserve', async (req, res) => {
+  try {
+    const { nome, whatsapp } = req.body;
+    const { tenant: tenantSlug, id: giftId } = req.params;
+
+    if (!nome || !whatsapp) {
+      return res.status(400).json({ error: 'Nome e WhatsApp são obrigatórios' });
+    }
+
+    const tenant = await getTenantBySlug(tenantSlug);
+    if (!tenant) return res.status(404).json({ error: 'Tenant not found' });
+
+    // Verificar se o presente já está reservado
+    const giftRes = await db.execute({
+      sql: 'SELECT * FROM gifts WHERE id = ? AND tenant_id = ?',
+      args: [giftId, tenant.id]
+    });
+
+    if (giftRes.rows.length === 0) return res.status(404).json({ error: 'Gift not found' });
+    const gift = giftRes.rows[0];
+
+    if (gift.reserved_by_whatsapp) {
+      return res.status(409).json({ error: 'Presente já reservado' });
+    }
+
+    // Verificar se o usuário já reservou outro presente neste tenant
+    const existingRes = await db.execute({
+      sql: 'SELECT id FROM gifts WHERE tenant_id = ? AND reserved_by_whatsapp = ?',
+      args: [tenant.id, whatsapp]
+    });
+
+    if (existingRes.rows.length > 0) {
+      return res.status(403).json({ error: 'Você só pode reservar um presente' });
+    }
+
+    // Reservar
+    await db.execute({
+      sql: 'UPDATE gifts SET reserved_by_name = ?, reserved_by_whatsapp = ?, reserved_at = ? WHERE id = ?',
+      args: [nome, whatsapp, new Date().toISOString(), giftId]
+    });
+
+    // Retornar presente com os links de compra/pix para o usuário concluir o presente
+    const updatedRes = await db.execute({
+      sql: 'SELECT * FROM gifts WHERE id = ?',
+      args: [giftId]
+    });
+    
+    const updatedGift = {
+      ...updatedRes.rows[0],
+      sites: JSON.parse(updatedRes.rows[0].sites || '[]'),
+      reserved: true
+    };
+
+    res.json({ gift: updatedGift });
+  } catch (error) {
+    console.error('Reserve gift error:', error?.message || error);
+    res.status(500).json({ error: error?.message || 'Internal server error' });
+  }
+});
 
 // GET /api/:tenant/gifts
 app.get('/api/:tenant/gifts', authMiddleware, async (req, res) => {

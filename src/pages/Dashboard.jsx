@@ -6,6 +6,7 @@ export default function Dashboard({ tenant, names, onLogout, onNewGift, onEditGi
   const [gifts, setGifts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [copied, setCopied] = useState(false);
 
   // Format names as "Nome1 & Nome2" with first letter capitalized
   const formatNames = () => {
@@ -30,6 +31,14 @@ export default function Dashboard({ tenant, names, onLogout, onNewGift, onEditGi
     }
   };
 
+  const handleShare = () => {
+    const url = `${window.location.origin}/#/${tenant}/lista`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
   const handleDelete = async (id) => {
     if (!window.confirm('Tem certeza que deseja excluir este presente?')) {
       return;
@@ -52,12 +61,20 @@ export default function Dashboard({ tenant, names, onLogout, onNewGift, onEditGi
             <h1 className="text-3xl font-display text-rose-gold">💍 {formatNames()}</h1>
             <p className="text-sm text-gray-600">Lista de presentes</p>
           </div>
-          <button
-            onClick={onLogout}
-            className="px-4 py-2 text-gold font-semibold hover:text-rose-gold"
-          >
-            Sair
-          </button>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={handleShare}
+              className={`px-4 py-2 text-sm font-semibold rounded-lg border transition ${copied ? 'bg-green-600 text-white border-green-600' : 'text-gold border-gold hover:bg-gold/10'}`}
+            >
+              {copied ? 'Link Copiado!' : 'Compartilhar'}
+            </button>
+            <button
+              onClick={onLogout}
+              className="px-4 py-2 text-gray-500 hover:text-rose-gold transition"
+            >
+              Sair
+            </button>
+          </div>
         </div>
       </header>
 

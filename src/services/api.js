@@ -152,4 +152,16 @@ export async function deleteGift(tenant, id) {
   });
 }
 
+// Public API
+export async function getPublicGifts(tenant) {
+  return apiCall(`/${tenant}/public/gifts`);
+}
+
+export async function reserveGift(tenant, id, nome, whatsapp) {
+  return apiCall(`/${tenant}/public/gifts/${id}/reserve`, {
+    method: 'POST',
+    body: JSON.stringify({ nome, whatsapp }),
+  });
+}
+
 export { getToken, setToken, clearToken, getNames, setNames, clearNames, getTenant, setTenant, clearTenant };
