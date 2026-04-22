@@ -6,6 +6,7 @@ export default function GiftForm({ tenant, giftId, onSave, onCancel }) {
   const [nome, setNome] = useState('');
   const [imagemUrl, setImagemUrl] = useState('');
   const [chavePix, setChavePix] = useState('');
+  const [preco, setPreco] = useState('');
   const [sites, setSites] = useState([]);
   const [loading, setLoading] = useState(giftId ? true : false);
   const [saving, setSaving] = useState(false);
@@ -24,6 +25,7 @@ export default function GiftForm({ tenant, giftId, onSave, onCancel }) {
       setNome(gift.nome);
       setImagemUrl(gift.imagem_url || '');
       setChavePix(gift.chave_pix || '');
+      setPreco(gift.preco || '');
       setSites(gift.sites || []);
     } catch (err) {
       setError(err.message || 'Falha ao carregar presente');
@@ -63,6 +65,7 @@ export default function GiftForm({ tenant, giftId, onSave, onCancel }) {
         nome,
         imagem_url: imagemUrl || null,
         chave_pix: chavePix || null,
+        preco: preco ? parseFloat(preco) : null,
         sites: sites.filter(s => s.label && s.url),
       };
 
@@ -133,7 +136,6 @@ export default function GiftForm({ tenant, giftId, onSave, onCancel }) {
               value={imagemUrl}
               onChange={(e) => setImagemUrl(e.target.value)}
               placeholder="https://example.com/image.jpg"
-              onBlur={() => {}}
               className="w-full px-4 py-2 border border-gold border-opacity-30 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent outline-none"
             />
             {imagemUrl && <ImagePreview url={imagemUrl} />}
@@ -142,14 +144,29 @@ export default function GiftForm({ tenant, giftId, onSave, onCancel }) {
           {/* Chave PIX */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Chave PIX
+              Chave PIX (Opcional)
             </label>
             <input
               type="text"
               value={chavePix}
               onChange={(e) => setChavePix(e.target.value)}
-              placeholder="xxx@exemplo.com ou chave"
-              className="w-full px-4 py-2 border border-gold border-opacity-30 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent outline-none"
+              placeholder="E-mail, CPF ou chave aleatória"
+              className="w-full px-4 py-2 border border-gold border-opacity-30 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent outline-none transition bg-white"
+            />
+          </div>
+
+          {/* Valor do Presente */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Valor do Presente (R$)
+            </label>
+            <input
+              type="number"
+              step="0.01"
+              value={preco}
+              onChange={(e) => setPreco(e.target.value)}
+              placeholder="Ex: 150,50"
+              className="w-full px-4 py-2 border border-gold border-opacity-30 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent outline-none transition bg-white"
             />
           </div>
 

@@ -26,7 +26,7 @@ test('Fluxo de Lista de Presentes Pública', async (t) => {
     const g1Res = await fetch(`${API_URL}/${testTenant}/gifts`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ nome: 'Presente 1', chave_pix: 'pix1@exemplo.com' })
+      body: JSON.stringify({ nome: 'Presente 1', chave_pix: 'pix1@exemplo.com', preco: 150.50 })
     });
     const g1Data = await g1Res.json();
     gift1Id = g1Data.gift.id;
@@ -35,7 +35,7 @@ test('Fluxo de Lista de Presentes Pública', async (t) => {
     const g2Res = await fetch(`${API_URL}/${testTenant}/gifts`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ nome: 'Presente 2', chave_pix: 'pix2@exemplo.com' })
+      body: JSON.stringify({ nome: 'Presente 2', chave_pix: 'pix2@exemplo.com', preco: 200.00 })
     });
     const g2Data = await g2Res.json();
     gift2Id = g2Data.gift.id;
@@ -48,6 +48,7 @@ test('Fluxo de Lista de Presentes Pública', async (t) => {
     assert.strictEqual(data.gifts.length, 2);
     const g1 = data.gifts.find(g => g.id === gift1Id);
     assert.strictEqual(g1.chave_pix, 'pix1@exemplo.com');
+    assert.strictEqual(Number(g1.preco), 150.50);
   });
 
   await t.test('Reservar presente 1', async () => {

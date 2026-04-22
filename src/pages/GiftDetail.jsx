@@ -8,11 +8,13 @@ export default function GiftDetail({ tenant, giftId, onDelete, onBack }) {
   const [deleting, setDeleting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [showFullImage, setShowFullImage] = useState(false);
 
   // Campos editáveis
   const [nome, setNome] = useState('');
   const [imagemUrl, setImagemUrl] = useState('');
   const [chavePix, setChavePix] = useState('');
+  const [preco, setPreco] = useState('');
   const [sites, setSites] = useState([]);
 
   useEffect(() => { loadGift(); }, [giftId, tenant]);
@@ -25,6 +27,7 @@ export default function GiftDetail({ tenant, giftId, onDelete, onBack }) {
       setNome(g.nome);
       setImagemUrl(g.imagem_url || '');
       setChavePix(g.chave_pix || '');
+      setPreco(g.preco || '');
       setSites(g.sites || []);
     } catch (err) {
       setError(err.message || 'Falha ao carregar presente');
@@ -37,6 +40,7 @@ export default function GiftDetail({ tenant, giftId, onDelete, onBack }) {
     setNome(gift.nome);
     setImagemUrl(gift.imagem_url || '');
     setChavePix(gift.chave_pix || '');
+    setPreco(gift.preco || '');
     setSites(gift.sites || []);
     setIsEditing(false);
     setError('');
@@ -51,6 +55,7 @@ export default function GiftDetail({ tenant, giftId, onDelete, onBack }) {
         nome,
         imagem_url: imagemUrl || null,
         chave_pix: chavePix || null,
+        preco: preco ? parseFloat(preco) : null,
         sites: sites.filter(s => s.label && s.url),
       });
       setGift(updated.gift);
@@ -126,13 +131,24 @@ export default function GiftDetail({ tenant, giftId, onDelete, onBack }) {
 
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           {imagemUrl && (
-            <div className="w-full h-72 bg-cream overflow-hidden">
+            <div className="relative group w-full h-72 bg-cream overflow-hidden flex items-center justify-center border-b border-gold border-opacity-10">
               <img
                 src={imagemUrl}
                 alt={nome}
-                className="w-full h-full object-cover"
+                className="max-w-full max-h-full object-contain"
                 onError={(e) => { e.target.style.display = 'none'; }}
               />
+              <button
+                type="button"
+                onClick={() => setShowFullImage(true)}
+                className="absolute top-4 right-4 p-2 bg-white/80 hover:bg-white text-rose-gold rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
+                title="Visualizar tamanho real"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              </button>
             </div>
           )}
 
@@ -171,6 +187,25 @@ export default function GiftDetail({ tenant, giftId, onDelete, onBack }) {
                 disabled={!isEditing}
                 className={inputClass}
               />
+            </div>
+
+            {/* Valor do Presente */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Valor do Presente</label>
+              {isEditing ? (
+                <input
+                  type="number"
+                  step="0.01"
+                  value={preco}
+                  onChange={e => setPreco(e.target.value)}
+                  className={inputClass}
+                  placeholder="Ex: 150.50"
+                />
+              ) : (
+                <div className={inputClass}>
+                  {preco ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(preco) : 'Não definido'}
+                </div>
+              )}
             </div>
 
             {/* Links */}
@@ -268,6 +303,21 @@ export default function GiftDetail({ tenant, giftId, onDelete, onBack }) {
           </div>
         </div>
       </main>
+
+      {/* Full Screen Modal */}
+      {showFullImage && (
+        <div 
+          className="fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-4 cursor-zoom-out"
+          onClick={() => setShowFullImage(false)}
+        >
+          <img 
+            src={imagemUrl} 
+            alt="Full size" 
+            className="max-w-full max-h-full object-contain shadow-2xl" 
+          />
+          <button className="absolute top-4 right-4 text-white text-4xl">&times;</button>
+        </div>
+      )}
     </div>
   );
 }

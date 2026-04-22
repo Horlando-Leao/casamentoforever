@@ -8,7 +8,7 @@ export default function GiftCard({ gift, onView, onEdit, onDelete }) {
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition group">
       <div
-        className="w-full h-48 bg-cream overflow-hidden cursor-pointer"
+        className="w-full h-48 bg-cream overflow-hidden cursor-pointer flex items-center justify-center border-b border-gold border-opacity-5"
         onClick={onView}
         title="Clique para ver detalhes"
       >
@@ -16,7 +16,7 @@ export default function GiftCard({ gift, onView, onEdit, onDelete }) {
           <img
             src={gift.imagem_url}
             alt={gift.nome}
-            className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+            className="max-w-full max-h-full object-contain group-hover:scale-105 transition duration-300"
             onError={(e) => { e.target.style.display = 'none'; }}
           />
         ) : (
@@ -33,6 +33,12 @@ export default function GiftCard({ gift, onView, onEdit, onDelete }) {
         >
           {gift.nome}
         </h3>
+
+        {gift.preco && (
+          <p className="text-rose-gold font-bold mb-2">
+            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(gift.preco)}
+          </p>
+        )}
 
         {displayPix && (
           <div className="mb-3 p-2 bg-gold/10 rounded border border-gold border-opacity-30">

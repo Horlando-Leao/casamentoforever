@@ -1,8 +1,0 @@
-
-> casamentoforever@0.1.0 api
-> node server.js
-
-◇ injected env (6) from .env // tip: ⌘ enable debugging { debug: true }
-JWT_SECRET loaded: YES
-✓ Tables created successfully
-🚀 Server running on http://localhost:3001

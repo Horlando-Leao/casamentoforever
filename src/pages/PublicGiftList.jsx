@@ -97,12 +97,12 @@ export default function PublicGiftList({ tenant }) {
                 key={gift.id} 
                 className={`bg-white rounded-lg shadow-lg overflow-hidden transition ${gift.reserved ? 'opacity-60 grayscale-[50%]' : 'hover:shadow-xl'}`}
               >
-                <div className="w-full h-48 bg-cream overflow-hidden">
+                <div className="w-full h-48 bg-cream overflow-hidden flex items-center justify-center border-b border-gold border-opacity-5">
                   {gift.imagem_url ? (
                     <img
                       src={gift.imagem_url}
                       alt={gift.nome}
-                      className="w-full h-full object-cover"
+                      className="max-w-full max-h-full object-contain"
                       onError={(e) => { e.target.style.display = 'none'; }}
                     />
                   ) : (
@@ -113,9 +113,15 @@ export default function PublicGiftList({ tenant }) {
                 </div>
                 
                 <div className="p-5 text-center">
-                  <h3 className="text-xl font-semibold text-gray-800 mb-4 truncate" title={gift.nome}>
+                  <h3 className="text-xl font-semibold text-gray-800 mb-2 truncate" title={gift.nome}>
                     {gift.nome}
                   </h3>
+                  
+                  {gift.preco && (
+                    <p className="text-rose-gold font-bold text-lg mb-4">
+                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(gift.preco)}
+                    </p>
+                  )}
                   
                   {gift.reserved ? (
                     <button disabled className="w-full py-3 bg-gray-300 text-gray-600 font-semibold rounded-lg cursor-not-allowed">

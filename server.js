@@ -55,6 +55,7 @@ async function createTables() {
         nome TEXT NOT NULL,
         imagem_url TEXT,
         chave_pix TEXT,
+        preco REAL,
         sites TEXT DEFAULT '[]',
         reserved_by_name TEXT,
         reserved_by_whatsapp TEXT,
@@ -90,6 +91,11 @@ async function createTables() {
       await db.execute('ALTER TABLE gifts ADD COLUMN reserved_by_whatsapp TEXT');
       await db.execute('ALTER TABLE gifts ADD COLUMN reserved_at TEXT');
       console.log('✓ Migration: colunas de reserva adicionadas à tabela gifts');
+    }
+
+    if (!giftCols.includes('preco')) {
+      await db.execute('ALTER TABLE gifts ADD COLUMN preco REAL');
+      console.log('✓ Migration: coluna preco adicionada à tabela gifts');
     }
 
     console.log('✓ Tables created successfully');
@@ -399,6 +405,7 @@ app.get('/api/:tenant/public/gifts', async (req, res) => {
         imagem_url: gift.imagem_url,
         // Omitir chave pix e sites se estiver reservado, e retornar flag reserved
         chave_pix: isReserved ? null : gift.chave_pix,
+        preco: gift.preco,
         sites: isReserved ? [] : JSON.parse(gift.sites || '[]'),
         reserved: isReserved,
       };
@@ -495,7 +502,7 @@ app.get('/api/:tenant/gifts', authMiddleware, async (req, res) => {
 // POST /api/:tenant/gifts
 app.post('/api/:tenant/gifts', authMiddleware, async (req, res) => {
   try {
-    const { nome, imagem_url, chave_pix, sites } = req.body;
+    const { nome, imagem_url, chave_pix, preco, sites } = req.body;
     
     if (!nome) {
       return res.status(400).json({ error: 'Gift name required' });
@@ -504,8 +511,8 @@ app.post('/api/:tenant/gifts', authMiddleware, async (req, res) => {
     const sitesJSON = JSON.stringify(sites || []);
     
     const insertResult = await db.execute({
-      sql: 'INSERT INTO gifts (tenant_id, user_id, nome, imagem_url, chave_pix, sites) VALUES (?, ?, ?, ?, ?, ?)',
-      args: [req.user.tenantId, req.user.userId, nome, imagem_url || null, chave_pix || null, sitesJSON],
+      sql: 'INSERT INTO gifts (tenant_id, user_id, nome, imagem_url, chave_pix, preco, sites) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      args: [req.user.tenantId, req.user.userId, nome, imagem_url || null, chave_pix || null, preco || null, sitesJSON],
     });
     
     const gift = {
@@ -515,6 +522,7 @@ app.post('/api/:tenant/gifts', authMiddleware, async (req, res) => {
       nome,
       imagem_url: imagem_url || null,
       chave_pix: chave_pix || null,
+      preco: preco || null,
       sites: sites || [],
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -554,7 +562,7 @@ app.get('/api/:tenant/gifts/:id', authMiddleware, async (req, res) => {
 // PUT /api/:tenant/gifts/:id
 app.put('/api/:tenant/gifts/:id', authMiddleware, async (req, res) => {
   try {
-    const { nome, imagem_url, chave_pix, sites } = req.body;
+    const { nome, imagem_url, chave_pix, preco, sites } = req.body;
     
     if (!nome) {
       return res.status(400).json({ error: 'Gift name required' });
@@ -564,8 +572,8 @@ app.put('/api/:tenant/gifts/:id', authMiddleware, async (req, res) => {
     const now = new Date().toISOString();
     
     await db.execute({
-      sql: 'UPDATE gifts SET nome = ?, imagem_url = ?, chave_pix = ?, sites = ?, updated_at = ? WHERE id = ? AND tenant_id = ? AND user_id = ?',
-      args: [nome, imagem_url || null, chave_pix || null, sitesJSON, now, req.params.id, req.user.tenantId, req.user.userId],
+      sql: 'UPDATE gifts SET nome = ?, imagem_url = ?, chave_pix = ?, preco = ?, sites = ?, updated_at = ? WHERE id = ? AND tenant_id = ? AND user_id = ?',
+      args: [nome, imagem_url || null, chave_pix || null, preco || null, sitesJSON, now, req.params.id, req.user.tenantId, req.user.userId],
     });
     
     const result = await db.execute({
