@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
-import { getGifts, deleteGift } from '../services/api';
+import { getGifts, deleteGift, getEventDetails } from '../services/api';
 import GiftCard from '../components/GiftCard';
 import GiftSkeleton from '../components/GiftSkeleton';
+import Countdown from '../components/Countdown';
 
 export default function Dashboard({ tenant, names, onLogout, onNewGift, onEditGift, onViewGift, onViewReceived, onViewEvent, onShareInvitation, showModal }) {
   const [gifts, setGifts] = useState([]);
+  const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -16,16 +18,20 @@ export default function Dashboard({ tenant, names, onLogout, onNewGift, onEditGi
   };
 
   useEffect(() => {
-    loadGifts();
+    loadData();
   }, [tenant]);
 
-  const loadGifts = async () => {
+  const loadData = async () => {
     try {
       setLoading(true);
-      const data = await getGifts(tenant);
-      setGifts(data.gifts);
+      const [giftsData, eventData] = await Promise.all([
+        getGifts(tenant),
+        getEventDetails(tenant).catch(() => ({ event: null }))
+      ]);
+      setGifts(giftsData.gifts);
+      setEvent(eventData.event);
     } catch (err) {
-      setError(err.message || 'Falha ao carregar presentes');
+      setError(err.message || 'Falha ao carregar dados');
     } finally {
       setLoading(false);
     }
@@ -57,7 +63,12 @@ export default function Dashboard({ tenant, names, onLogout, onNewGift, onEditGi
             <h1 className="text-2xl sm:text-3xl font-display text-text-primary flex items-center gap-2">
               <span className="text-3xl">💍</span> {formatNames()}
             </h1>
-            <p className="text-sm font-bold text-text-secondary uppercase tracking-widest mt-1">Dashboard</p>
+            <div className="flex items-center gap-3 mt-1">
+              <p className="text-sm font-bold text-text-secondary uppercase tracking-widest">Dashboard</p>
+              {event?.data_evento && (
+                <Countdown date={event.data_evento} time={event.horario} />
+              )}
+            </div>
           </div>
           <div className="flex items-center gap-3 w-full sm:w-auto">
             <button

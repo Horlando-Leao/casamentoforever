@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { getInvitationByQRToken, getPublicGifts, reserveGift } from '../services/api';
 import GiftSkeleton from '../components/GiftSkeleton';
+import Countdown from '../components/Countdown';
 
 export default function PublicEventDetail({ qrToken }) {
   const giftsRef = useRef(null);
@@ -119,9 +120,14 @@ export default function PublicEventDetail({ qrToken }) {
         <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-gold/5 rounded-full blur-3xl"></div>
 
         <div className="relative max-w-4xl mx-auto px-6 py-16 md:py-24 text-center">
-          <span className="inline-block py-1 px-3 rounded-full bg-cream-dark text-gold-dark text-xs font-bold tracking-widest uppercase mb-6 shadow-sm">
-            Convite de Casamento
-          </span>
+          <div className="flex flex-col items-center gap-4 mb-6">
+            <span className="inline-block py-1 px-3 rounded-full bg-cream-dark text-gold-dark text-xs font-bold tracking-widest uppercase shadow-sm">
+              Convite de Casamento
+            </span>
+            {invitation?.event?.data_evento && (
+              <Countdown date={invitation.event.data_evento} time={invitation.event.horario} />
+            )}
+          </div>
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-display text-text-primary mb-6 leading-tight">
             {invitation?.couple?.nome1} <span className="text-rose-gold italic">&</span> {invitation?.couple?.nome2}
           </h1>
@@ -153,7 +159,12 @@ export default function PublicEventDetail({ qrToken }) {
                       <div className="flex items-start gap-4">
                         <div className="text-4xl">📅</div>
                         <div className="flex-1">
-                          <h3 className="text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">Data & Hora</h3>
+                          <div className="flex items-center justify-between gap-2 mb-2">
+                            <h3 className="text-xs font-bold text-text-secondary uppercase tracking-wider">Data & Hora</h3>
+                            {invitation.event.data_evento && (
+                              <Countdown date={invitation.event.data_evento} time={invitation.event.horario} />
+                            )}
+                          </div>
                           {invitation.event.data_evento && (
                             <p className="text-lg font-semibold text-text-primary capitalize mb-1">
                               {new Date(invitation.event.data_evento + 'T00:00:00').toLocaleDateString('pt-BR', {
