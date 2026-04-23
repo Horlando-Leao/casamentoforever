@@ -60,10 +60,23 @@ async function createTables() {
         reserved_by_name TEXT,
         reserved_by_whatsapp TEXT,
         reserved_at TEXT,
+        received_at TEXT,
         created_at TEXT DEFAULT (datetime('now')),
         updated_at TEXT DEFAULT (datetime('now')),
         FOREIGN KEY (tenant_id) REFERENCES tenants(id),
         FOREIGN KEY (user_id) REFERENCES users(id)
+      )
+    `);
+
+    await db.execute(`
+      CREATE TABLE IF NOT EXISTS audit_logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        tenant_id INTEGER,
+        user_id INTEGER,
+        action TEXT NOT NULL,
+        entity TEXT NOT NULL,
+        entity_id TEXT,
+        created_at TEXT DEFAULT (datetime('now'))
       )
     `);
 
@@ -96,6 +109,11 @@ async function createTables() {
     if (!giftCols.includes('preco')) {
       await db.execute('ALTER TABLE gifts ADD COLUMN preco REAL');
       console.log('✓ Migration: coluna preco adicionada à tabela gifts');
+    }
+    
+    if (!giftCols.includes('received_at')) {
+      await db.execute('ALTER TABLE gifts ADD COLUMN received_at TEXT');
+      console.log('✓ Migration: coluna received_at adicionada à tabela gifts');
     }
 
     console.log('✓ Tables created successfully');
@@ -142,6 +160,18 @@ function verifyJWT(token) {
     return payload;
   } catch (error) {
     return null;
+  }
+}
+
+// Audit logger
+async function audit(tenantId, userId, action, entity, entityId) {
+  try {
+    await db.execute({
+      sql: 'INSERT INTO audit_logs (tenant_id, user_id, action, entity, entity_id) VALUES (?, ?, ?, ?, ?)',
+      args: [tenantId || null, userId || null, action, entity, String(entityId || '')],
+    });
+  } catch (error) {
+    console.error('Audit error:', error);
   }
 }
 
@@ -460,6 +490,8 @@ app.post('/api/:tenant/public/gifts/:id/reserve', async (req, res) => {
       args: [nome, whatsapp, new Date().toISOString(), giftId]
     });
 
+    await audit(tenant.id, null, 'RESERVE_GIFT', 'gifts', giftId);
+
     // Retornar presente com os links de compra/pix para o usuário concluir o presente
     const updatedRes = await db.execute({
       sql: 'SELECT * FROM gifts WHERE id = ?',
@@ -495,6 +527,88 @@ app.get('/api/:tenant/gifts', authMiddleware, async (req, res) => {
     res.json({ gifts });
   } catch (error) {
     console.error('Get gifts error:', error?.message || error);
+    res.status(500).json({ error: error?.message || 'Internal server error' });
+  }
+});
+
+// GET /api/:tenant/gifts/received
+app.get('/api/:tenant/gifts/received', authMiddleware, async (req, res) => {
+  try {
+    // Busca presentes que foram reservados
+    const result = await db.execute({
+      sql: 'SELECT * FROM gifts WHERE tenant_id = ? AND reserved_by_whatsapp IS NOT NULL ORDER BY reserved_at DESC',
+      args: [req.user.tenantId],
+    });
+    
+    const gifts = result.rows.map(gift => ({
+      ...gift,
+      sites: JSON.parse(gift.sites || '[]'),
+      status: gift.received_at ? 'received' : 'reserved',
+    }));
+    
+    res.json({ gifts });
+  } catch (error) {
+    console.error('Get received gifts error:', error?.message || error);
+    res.status(500).json({ error: error?.message || 'Internal server error' });
+  }
+});
+
+// PUT /api/:tenant/gifts/:id/accept
+app.put('/api/:tenant/gifts/:id/accept', authMiddleware, async (req, res) => {
+  try {
+    const giftRes = await db.execute({
+      sql: 'SELECT * FROM gifts WHERE id = ? AND tenant_id = ?',
+      args: [req.params.id, req.user.tenantId]
+    });
+
+    if (giftRes.rows.length === 0) return res.status(404).json({ error: 'Gift not found' });
+
+    const now = new Date().toISOString();
+    await db.execute({
+      sql: 'UPDATE gifts SET received_at = ? WHERE id = ? AND tenant_id = ?',
+      args: [now, req.params.id, req.user.tenantId]
+    });
+
+    await audit(req.user.tenantId, req.user.userId, 'ACCEPT_GIFT', 'gifts', req.params.id);
+
+    const result = await db.execute({
+      sql: 'SELECT * FROM gifts WHERE id = ?',
+      args: [req.params.id],
+    });
+
+    const gift = {
+      ...result.rows[0],
+      sites: JSON.parse(result.rows[0].sites || '[]'),
+      status: 'received'
+    };
+
+    res.json({ gift });
+  } catch (error) {
+    console.error('Accept gift error:', error?.message || error);
+    res.status(500).json({ error: error?.message || 'Internal server error' });
+  }
+});
+
+// DELETE /api/:tenant/gifts/:id/reservation
+app.delete('/api/:tenant/gifts/:id/reservation', authMiddleware, async (req, res) => {
+  try {
+    const giftRes = await db.execute({
+      sql: 'SELECT * FROM gifts WHERE id = ? AND tenant_id = ?',
+      args: [req.params.id, req.user.tenantId]
+    });
+
+    if (giftRes.rows.length === 0) return res.status(404).json({ error: 'Gift not found' });
+
+    await db.execute({
+      sql: 'UPDATE gifts SET reserved_by_name = NULL, reserved_by_whatsapp = NULL, reserved_at = NULL, received_at = NULL WHERE id = ? AND tenant_id = ?',
+      args: [req.params.id, req.user.tenantId]
+    });
+
+    await audit(req.user.tenantId, req.user.userId, 'REMOVE_RESERVATION', 'gifts', req.params.id);
+
+    res.status(200).json({ message: 'Reserva removida com sucesso' });
+  } catch (error) {
+    console.error('Remove gift reservation error:', error?.message || error);
     res.status(500).json({ error: error?.message || 'Internal server error' });
   }
 });

@@ -3,7 +3,7 @@ import { getGifts, deleteGift } from '../services/api';
 import GiftCard from '../components/GiftCard';
 import GiftSkeleton from '../components/GiftSkeleton';
 
-export default function Dashboard({ tenant, names, onLogout, onNewGift, onEditGift, onViewGift }) {
+export default function Dashboard({ tenant, names, onLogout, onNewGift, onEditGift, onViewGift, onViewReceived }) {
   const [gifts, setGifts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -110,15 +110,26 @@ export default function Dashboard({ tenant, names, onLogout, onNewGift, onEditGi
                 <p className="text-text-secondary">{gifts.length} {gifts.length === 1 ? 'item cadastrado' : 'itens cadastrados'}</p>
               </div>
               
-              <button
-                onClick={onNewGift}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gold hover:bg-gold-dark text-white font-bold py-3.5 sm:py-3 px-8 rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                Novo Presente
-              </button>
+              <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-3">
+                <button
+                  onClick={onViewReceived}
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3.5 sm:py-3 px-6 rounded-xl transition-all shadow-sm"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
+                  Recebidos
+                </button>
+                <button
+                  onClick={onNewGift}
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gold hover:bg-gold-dark text-white font-bold py-3.5 sm:py-3 px-8 rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Novo Presente
+                </button>
+              </div>
             </div>
 
             {/* Gifts Grid */}

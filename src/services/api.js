@@ -152,6 +152,23 @@ export async function deleteGift(tenant, id) {
   });
 }
 
+// Received Gifts (Admin)
+export async function getReceivedGifts(tenant) {
+  return apiCall(`/${tenant}/gifts/received`);
+}
+
+export async function acceptGift(tenant, id) {
+  return apiCall(`/${tenant}/gifts/${id}/accept`, {
+    method: 'PUT',
+  });
+}
+
+export async function removeGiftReservation(tenant, id) {
+  return apiCall(`/${tenant}/gifts/${id}/reservation`, {
+    method: 'DELETE',
+  });
+}
+
 // Public API
 export async function getPublicGifts(tenant) {
   return apiCall(`/${tenant}/public/gifts`);

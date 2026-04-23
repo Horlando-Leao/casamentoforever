@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import GiftForm from './pages/GiftForm';
 import GiftDetail from './pages/GiftDetail';
 import PublicGiftList from './pages/PublicGiftList';
+import ReceivedGifts from './pages/ReceivedGifts';
 import BottomNav from './components/BottomNav';
 
 function App() {
@@ -56,6 +57,9 @@ function App() {
       setTenant(parts[0]);
       setGiftId(parts[2]);
       setCurrentPage('gift-form');
+    } else if (parts[1] === 'received' && parts[0]) {
+      setTenant(parts[0]);
+      setCurrentPage('received-gifts');
     } else if (parts[1] === 'lista' && parts[0]) {
       setTenant(parts[0]);
       setCurrentPage('public-list');
@@ -81,6 +85,8 @@ function App() {
       }
     } else if (page === 'gift-detail') {
       window.location.hash = `#/${newTenant}/gifts/${newGiftId}`;
+    } else if (page === 'received-gifts') {
+      window.location.hash = `#/${newTenant}/received`;
     }
   };
 
@@ -96,7 +102,7 @@ function App() {
   const getBottomNavView = () => {
     if (currentPage === 'public-list') return 'list';
     if (['login', 'register'].includes(currentPage)) return 'login';
-    if (['dashboard', 'gift-form', 'gift-detail'].includes(currentPage)) return 'dashboard';
+    if (['dashboard', 'gift-form', 'gift-detail', 'received-gifts'].includes(currentPage)) return 'dashboard';
     return 'home';
   };
 
@@ -145,6 +151,7 @@ function App() {
           onNewGift={() => navigateTo('gift-form', tenant, null)}
           onEditGift={(id) => navigateTo('gift-form', tenant, id)}
           onViewGift={(id) => navigateTo('gift-detail', tenant, id)}
+          onViewReceived={() => navigateTo('received-gifts', tenant)}
         />
       )}
       {currentPage === 'gift-form' && tenant && (
@@ -166,6 +173,12 @@ function App() {
       )}
       {currentPage === 'public-list' && tenant && (
         <PublicGiftList tenant={tenant} />
+      )}
+      {currentPage === 'received-gifts' && tenant && (
+        <ReceivedGifts 
+          tenant={tenant}
+          onBack={() => navigateTo('dashboard', tenant)}
+        />
       )}
 
       {/* Bottom Navigation for Mobile */}
