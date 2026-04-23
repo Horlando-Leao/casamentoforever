@@ -117,131 +117,192 @@ export default function GiftDetail({ tenant, giftId, onDelete, onBack }) {
 
   return (
     <div className="min-h-screen bg-cream">
-      <header className="bg-white border-b border-gold border-opacity-20 shadow-sm">
-        <div className="max-w-2xl mx-auto px-4 py-6">
-          <button onClick={onBack} className="text-gold font-semibold hover:text-rose-gold mb-4 block">
-            ← Voltar
+      <header className="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-cream-dark shadow-sm">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+          <button onClick={onBack} className="flex items-center gap-2 text-gold-dark font-medium hover:text-rose-gold transition-colors p-2 -ml-2 rounded-lg hover:bg-cream-alt">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+            </svg>
+            Voltar
           </button>
-          <h1 className="text-3xl font-display text-rose-gold">{gift.nome}</h1>
+          {!isEditing && (
+            <div className="flex items-center gap-2">
+              <button onClick={() => setIsEditing(true)} className="p-2 text-text-secondary hover:text-gold-dark hover:bg-cream-alt rounded-lg transition-colors" title="Editar">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                </svg>
+              </button>
+              <button onClick={handleDelete} disabled={deleting} className="p-2 text-text-secondary hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Excluir">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+              </button>
+            </div>
+          )}
         </div>
       </header>
 
-      <main className="max-w-2xl mx-auto px-4 py-12">
-        {error && <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-lg">{error}</div>}
+      <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8 pb-24">
+        {error && <div className="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 rounded-xl text-center flex items-center justify-center gap-2"><span className="font-semibold">Erro:</span> {error}</div>}
 
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          {imagemUrl && (
-            <div className="relative group w-full h-72 bg-cream overflow-hidden flex items-center justify-center border-b border-gold border-opacity-10">
+        <div className="bg-white rounded-3xl shadow-soft-lg overflow-hidden border border-cream-dark">
+          {imagemUrl && !isEditing ? (
+            <div className="relative group w-full aspect-[16/9] sm:aspect-[2/1] bg-cream-alt overflow-hidden flex items-center justify-center">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-10"></div>
               <img
                 src={imagemUrl}
                 alt={nome}
-                className="max-w-full max-h-full object-contain"
+                className="w-full h-full object-cover"
                 onError={(e) => { e.target.style.display = 'none'; }}
               />
               <button
                 type="button"
                 onClick={() => setShowFullImage(true)}
-                className="absolute top-4 right-4 p-2 bg-white/80 hover:bg-white text-rose-gold rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
-                title="Visualizar tamanho real"
+                className="absolute bottom-4 right-4 p-2.5 bg-white/20 backdrop-blur-md hover:bg-white text-white hover:text-gold-dark rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all z-20"
+                title="Expandir imagem"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
                 </svg>
               </button>
+              <h1 className="absolute bottom-6 left-6 right-16 text-3xl sm:text-4xl font-display text-white z-20 text-shadow-sm font-semibold truncate">
+                {gift.nome}
+              </h1>
+            </div>
+          ) : (
+            <div className="px-8 pt-8 pb-4 border-b border-cream-dark bg-cream-alt/30">
+               <h1 className="text-3xl sm:text-4xl font-display text-text-primary text-center">
+                 {isEditing ? 'Editar Presente' : gift.nome}
+               </h1>
             </div>
           )}
 
-          <div className="p-8 space-y-5">
+          <div className="p-6 sm:p-8 space-y-6">
             {/* Nome */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Nome do Presente</label>
-              <input
-                type="text"
-                value={nome}
-                onChange={e => setNome(e.target.value)}
-                disabled={!isEditing}
-                className={inputClass}
-              />
-            </div>
-
-            {/* Imagem URL */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">URL da Imagem</label>
-              <input
-                type="url"
-                value={imagemUrl}
-                onChange={e => setImagemUrl(e.target.value)}
-                disabled={!isEditing}
-                className={inputClass}
-              />
-            </div>
-
-            {/* Chave PIX */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Chave PIX</label>
-              <input
-                type="text"
-                value={chavePix}
-                onChange={e => setChavePix(e.target.value)}
-                disabled={!isEditing}
-                className={inputClass}
-              />
-            </div>
+            {isEditing && (
+              <div>
+                <label className="block text-sm font-bold text-text-secondary mb-2 tracking-wide uppercase">Nome do Presente</label>
+                <input
+                  type="text"
+                  value={nome}
+                  onChange={e => setNome(e.target.value)}
+                  className={inputClass}
+                  placeholder="Ex: Jogo de Panelas"
+                />
+              </div>
+            )}
 
             {/* Valor do Presente */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Valor do Presente</label>
+              <label className="block text-sm font-bold text-text-secondary mb-2 tracking-wide uppercase">Valor</label>
+              {isEditing ? (
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <span className="text-gray-500 font-medium">R$</span>
+                  </div>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={preco}
+                    onChange={e => setPreco(e.target.value)}
+                    className={`${inputClass} pl-12`}
+                    placeholder="0.00"
+                  />
+                </div>
+              ) : (
+                <div className="text-3xl font-bold text-gold-dark">
+                  {preco ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(preco) : <span className="text-gray-400 font-normal text-lg">Não definido</span>}
+                </div>
+              )}
+            </div>
+
+            {/* Imagem URL */}
+            {isEditing && (
+              <div>
+                <label className="block text-sm font-bold text-text-secondary mb-2 tracking-wide uppercase">URL da Imagem</label>
+                <input
+                  type="url"
+                  value={imagemUrl}
+                  onChange={e => setImagemUrl(e.target.value)}
+                  className={inputClass}
+                  placeholder="https://exemplo.com/imagem.jpg"
+                />
+              </div>
+            )}
+
+            {/* Chave PIX */}
+            <div>
+              <label className="block text-sm font-bold text-text-secondary mb-2 tracking-wide uppercase">Chave PIX</label>
               {isEditing ? (
                 <input
-                  type="number"
-                  step="0.01"
-                  value={preco}
-                  onChange={e => setPreco(e.target.value)}
+                  type="text"
+                  value={chavePix}
+                  onChange={e => setChavePix(e.target.value)}
                   className={inputClass}
-                  placeholder="Ex: 150.50"
+                  placeholder="CPF, E-mail, Celular ou Aleatória"
                 />
-              ) : (
-                <div className={inputClass}>
-                  {preco ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(preco) : 'Não definido'}
+              ) : chavePix ? (
+                <div className="flex items-center justify-between p-4 bg-cream rounded-xl border border-gold-light/30">
+                  <span className="font-mono text-text-primary break-all mr-4">{chavePix}</span>
+                  <button 
+                    onClick={() => navigator.clipboard.writeText(chavePix)}
+                    className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gold/30 text-gold-dark text-xs font-bold rounded-lg hover:bg-gold/10 transition-colors shadow-sm"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    COPIAR
+                  </button>
                 </div>
+              ) : (
+                <p className="text-text-light italic">Nenhuma chave PIX vinculada a este presente.</p>
               )}
             </div>
 
             {/* Links */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">Links para compra</label>
+              <label className="block text-sm font-bold text-text-secondary mb-3 tracking-wide uppercase">Links para compra</label>
               {sites.length === 0 && !isEditing && (
-                <p className="text-sm text-gray-400 italic">Nenhum link cadastrado</p>
+                <p className="text-text-light italic">Nenhum link sugerido para compra.</p>
               )}
               {sites.map((site, i) => (
-                <div key={i} className="mb-3 p-4 border border-gold border-opacity-20 rounded-lg bg-cream/50">
-                  <div className="grid grid-cols-1 gap-2 mb-2">
-                    <input
-                      type="text"
-                      value={site.label}
-                      onChange={e => handleUpdateSite(i, 'label', e.target.value)}
-                      disabled={!isEditing}
-                      placeholder="Ex: Amazon"
-                      className={siteInputClass}
-                    />
-                    <input
-                      type="url"
-                      value={site.url}
-                      onChange={e => handleUpdateSite(i, 'url', e.target.value)}
-                      disabled={!isEditing}
-                      placeholder="https://..."
-                      className={siteInputClass}
-                    />
-                  </div>
-                  {isEditing && (
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveSite(i)}
-                      className="text-sm text-red-600 hover:text-red-700 font-semibold"
+                <div key={i} className={`mb-3 ${isEditing ? 'p-4 border border-cream-dark rounded-xl bg-gray-50/50' : ''}`}>
+                  {isEditing ? (
+                    <div className="grid grid-cols-1 gap-3 mb-3">
+                      <input
+                        type="text"
+                        value={site.label}
+                        onChange={e => handleUpdateSite(i, 'label', e.target.value)}
+                        placeholder="Nome da Loja (ex: Amazon)"
+                        className={siteInputClass}
+                      />
+                      <input
+                        type="url"
+                        value={site.url}
+                        onChange={e => handleUpdateSite(i, 'url', e.target.value)}
+                        placeholder="https://..."
+                        className={siteInputClass}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveSite(i)}
+                        className="text-sm text-red-500 hover:text-red-700 font-semibold justify-self-end mt-1"
+                      >
+                        Remover
+                      </button>
+                    </div>
+                  ) : (
+                    <a 
+                      href={site.url} 
+                      target="_blank" 
+                      rel="noreferrer"
+                      className="flex items-center justify-between p-4 bg-white border border-gold-light/40 rounded-xl hover:border-gold hover:shadow-md transition-all group"
                     >
-                      ✕ Remover
-                    </button>
+                      <span className="font-medium text-text-primary group-hover:text-gold-dark transition-colors">{site.label}</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gold/50 group-hover:text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                    </a>
                   )}
                 </div>
               ))}
@@ -249,57 +310,41 @@ export default function GiftDetail({ tenant, giftId, onDelete, onBack }) {
                 <button
                   type="button"
                   onClick={handleAddSite}
-                  className="text-sm text-gold font-semibold hover:text-rose-gold"
+                  className="mt-2 text-sm text-gold-dark font-bold hover:text-rose-gold flex items-center gap-1 bg-gold/10 px-4 py-2 rounded-lg"
                 >
-                  + Adicionar link
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+                  </svg>
+                  Adicionar link
                 </button>
               )}
             </div>
 
-            {/* Meta */}
-            <div className="pt-4 border-t border-gray-100 space-y-1 text-xs text-gray-400">
-              <p>Criado em: {new Date(gift.created_at).toLocaleDateString('pt-BR')}</p>
-              {gift.updated_at && (
-                <p>Atualizado em: {new Date(gift.updated_at).toLocaleDateString('pt-BR')}</p>
-              )}
-            </div>
-
-            {/* Botões */}
-            <div className="flex gap-4 pt-2">
-              {!isEditing ? (
-                <>
-                  <button
-                    onClick={() => setIsEditing(true)}
-                    className="flex-1 px-6 py-2 bg-gold hover:bg-gold/90 text-white font-semibold rounded-lg transition"
-                  >
-                    Editar
-                  </button>
-                  <button
-                    onClick={handleDelete}
-                    disabled={deleting}
-                    className="flex-1 px-6 py-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white font-semibold rounded-lg transition"
-                  >
-                    {deleting ? 'Excluindo...' : 'Excluir'}
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    onClick={handleSave}
-                    disabled={saving}
-                    className="flex-1 px-6 py-2 bg-gold hover:bg-gold/90 disabled:bg-gray-400 text-white font-semibold rounded-lg transition"
-                  >
-                    {saving ? 'Salvando...' : 'Salvar'}
-                  </button>
-                  <button
-                    onClick={handleCancelEdit}
-                    className="flex-1 px-6 py-2 border border-gold text-gold hover:bg-gold/10 font-semibold rounded-lg transition"
-                  >
-                    Cancelar
-                  </button>
-                </>
-              )}
-            </div>
+            {/* Meta Info */}
+            {!isEditing && (
+              <div className="pt-6 border-t border-cream-dark text-xs text-text-light flex justify-between">
+                <span>Adicionado em: {new Date(gift.created_at).toLocaleDateString('pt-BR')}</span>
+              </div>
+            )}
+            
+            {/* Botões do Formulário de Edição */}
+            {isEditing && (
+              <div className="flex gap-3 pt-6 border-t border-cream-dark sticky bottom-4 z-10 bg-white/80 backdrop-blur-sm p-4 -mx-6 -mb-6 mt-4">
+                <button
+                  onClick={handleCancelEdit}
+                  className="flex-1 py-3.5 border border-cream-dark text-text-secondary hover:bg-gray-50 font-bold rounded-xl transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="flex-[2] py-3.5 bg-gold hover:bg-gold-dark disabled:bg-gray-300 text-white font-bold rounded-xl shadow-md shadow-gold/20 transition-all"
+                >
+                  {saving ? 'Salvando...' : 'Salvar Alterações'}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </main>

@@ -8,6 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "api": "node server.js",
+    "stop:api": "fuser -k 3001/tcp",
     "start": "node server.js"
   },
   "dependencies": {

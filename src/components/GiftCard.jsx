@@ -6,61 +6,69 @@ export default function GiftCard({ gift, onView, onEdit, onDelete }) {
     : null;
 
   return (
-    <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition group">
+    <div className="bg-white rounded-2xl shadow-soft hover:shadow-floating hover:-translate-y-1 transition-all duration-300 overflow-hidden group border border-cream-dark">
       <div
-        className="w-full h-48 bg-cream overflow-hidden cursor-pointer flex items-center justify-center border-b border-gold border-opacity-5"
+        className="w-full aspect-[4/3] bg-cream-alt overflow-hidden cursor-pointer flex items-center justify-center relative"
         onClick={onView}
         title="Clique para ver detalhes"
       >
+        <div className="absolute inset-0 bg-gradient-to-tr from-cream-dark/20 to-transparent z-0"></div>
         {gift.imagem_url ? (
           <img
             src={gift.imagem_url}
             alt={gift.nome}
-            className="max-w-full max-h-full object-contain group-hover:scale-105 transition duration-300"
+            className="w-full h-full object-cover group-hover:scale-105 transition duration-500 relative z-10"
             onError={(e) => { e.target.style.display = 'none'; }}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-4xl group-hover:scale-110 transition duration-300">
+          <div className="w-full h-full flex items-center justify-center text-4xl group-hover:scale-110 transition duration-500 relative z-10">
             💝
           </div>
         )}
       </div>
 
-      <div className="p-4">
+      <div className="p-5">
         <h3
-          className="text-lg font-semibold text-gray-800 truncate mb-2 cursor-pointer hover:text-rose-gold transition"
+          className="font-display text-xl font-semibold text-text-primary mb-2 cursor-pointer hover:text-gold-dark transition-colors line-clamp-2"
           onClick={onView}
         >
           {gift.nome}
         </h3>
 
         {gift.preco && (
-          <p className="text-rose-gold font-bold mb-2">
+          <p className="text-gold-dark font-bold text-lg mb-3">
             {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(gift.preco)}
           </p>
         )}
 
         {displayPix && (
-          <div className="mb-3 p-2 bg-gold/10 rounded border border-gold border-opacity-30">
-            <p className="text-xs text-gray-600 mb-1">PIX:</p>
-            <p className="text-sm font-mono text-rose-gold truncate">{displayPix}</p>
+          <div className="mb-4 p-3 bg-cream rounded-xl border border-gold-light/30">
+            <p className="text-xs text-text-secondary mb-1 uppercase tracking-wider font-semibold">Chave PIX</p>
+            <p className="text-sm font-mono text-text-primary truncate">{displayPix}</p>
           </div>
         )}
 
-        <div className="flex gap-2">
-          <button
-            onClick={onEdit}
-            className="flex-1 px-3 py-2 text-sm font-semibold text-gold hover:text-rose-gold transition"
-          >
-            Editar
-          </button>
-          <button
-            onClick={onDelete}
-            className="flex-1 px-3 py-2 text-sm font-semibold text-red-600 hover:text-red-700 transition"
-          >
-            Excluir
-          </button>
-        </div>
+        {/* Action Buttons - Only show if onEdit/onDelete are provided (Dashboard context) */}
+        {(onEdit || onDelete) && (
+          <div className="flex gap-3 mt-4 pt-4 border-t border-cream-dark">
+            {onEdit && (
+              <button
+                onClick={onEdit}
+                className="flex-1 px-4 py-2 text-sm font-semibold text-gold-dark bg-gold/10 hover:bg-gold/20 rounded-xl transition-colors"
+              >
+                Editar
+              </button>
+            )}
+            {onDelete && (
+              <button
+                onClick={onDelete}
+                className="flex-1 px-4 py-2 text-sm font-semibold text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition-colors"
+              >
+                Excluir
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

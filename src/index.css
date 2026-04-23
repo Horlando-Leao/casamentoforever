@@ -5,12 +5,15 @@
 @tailwind utilities;
 
 body {
-  @apply min-h-screen bg-cream text-text-primary antialiased;
+  @apply min-h-screen bg-cream text-text-primary antialiased selection:bg-rose-gold/20 selection:text-text-primary;
   font-family: 'Lato', sans-serif;
+  line-height: 1.6;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Playfair Display', serif;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
 }
 
 .font-display {
