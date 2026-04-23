@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { getReceivedGifts, acceptGift, removeGiftReservation } from '../services/api';
 import GiftSkeleton from '../components/GiftSkeleton';
 
-export default function ReceivedGifts({ tenant, onBack }) {
+export default function ReceivedGifts({ tenant, onBack, showModal }) {
   const [gifts, setGifts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -40,16 +40,21 @@ export default function ReceivedGifts({ tenant, onBack }) {
   };
 
   const handleRemove = async (id) => {
-    if (!window.confirm('Tem certeza que deseja remover a reserva deste presente? Ele voltará para a lista pública.')) {
-      return;
-    }
-    try {
-      await removeGiftReservation(tenant, id);
-      showToast('Reserva removida com sucesso!');
-      setGifts(gifts.filter(g => g.id !== id));
-    } catch (err) {
-      setError(err.message || 'Falha ao remover reserva');
-    }
+    showModal({
+      title: 'Desvincular Reserva?',
+      message: 'Tem certeza que deseja remover a reserva deste presente? Ele voltará para a lista pública e ficará disponível para outros convidados.',
+      confirmLabel: 'Sim, Desvincular',
+      cancelLabel: 'Cancelar',
+      onConfirm: async () => {
+        try {
+          await removeGiftReservation(tenant, id);
+          showToast('Reserva removida com sucesso!');
+          setGifts(gifts.filter(g => g.id !== id));
+        } catch (err) {
+          setError(err.message || 'Falha ao remover reserva');
+        }
+      }
+    });
   };
 
   const formatCurrency = (value) => {

@@ -181,4 +181,26 @@ export async function reserveGift(tenant, id, nome, whatsapp) {
   });
 }
 
+// Event Details
+export async function getEventDetails(tenant) {
+  return apiCall(`/${tenant}/event`);
+}
+
+export async function saveEventDetails(tenant, eventData) {
+  return apiCall(`/${tenant}/event`, {
+    method: 'POST',
+    body: JSON.stringify(eventData),
+  });
+}
+
+export async function regenerateQRToken(tenant) {
+  return apiCall(`/${tenant}/event/regenerate-qr`, {
+    method: 'POST',
+  });
+}
+
+export async function getInvitationByQRToken(qrToken) {
+  return apiCall(`/convite/${qrToken}`);
+}
+
 export { getToken, setToken, clearToken, getNames, setNames, clearNames, getTenant, setTenant, clearTenant };

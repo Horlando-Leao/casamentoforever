@@ -5,7 +5,6 @@ import ImagePreview from '../components/ImagePreview';
 export default function GiftForm({ tenant, giftId, onSave, onCancel }) {
   const [nome, setNome] = useState('');
   const [imagemUrl, setImagemUrl] = useState('');
-  const [chavePix, setChavePix] = useState('');
   const [preco, setPreco] = useState('');
   const [sites, setSites] = useState([]);
   const [loading, setLoading] = useState(giftId ? true : false);
@@ -24,7 +23,6 @@ export default function GiftForm({ tenant, giftId, onSave, onCancel }) {
       const gift = data.gift;
       setNome(gift.nome);
       setImagemUrl(gift.imagem_url || '');
-      setChavePix(gift.chave_pix || '');
       setPreco(gift.preco || '');
       setSites(gift.sites || []);
     } catch (err) {
@@ -64,7 +62,6 @@ export default function GiftForm({ tenant, giftId, onSave, onCancel }) {
       const giftData = {
         nome,
         imagem_url: imagemUrl || null,
-        chave_pix: chavePix || null,
         preco: preco ? parseFloat(preco) : null,
         sites: sites.filter(s => s.label && s.url),
       };
@@ -141,19 +138,6 @@ export default function GiftForm({ tenant, giftId, onSave, onCancel }) {
             {imagemUrl && <ImagePreview url={imagemUrl} />}
           </div>
 
-          {/* Chave PIX */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Chave PIX (Opcional)
-            </label>
-            <input
-              type="text"
-              value={chavePix}
-              onChange={(e) => setChavePix(e.target.value)}
-              placeholder="E-mail, CPF ou chave aleatória"
-              className="w-full px-4 py-2 border border-gold border-opacity-30 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent outline-none transition bg-white"
-            />
-          </div>
 
           {/* Valor do Presente */}
           <div>

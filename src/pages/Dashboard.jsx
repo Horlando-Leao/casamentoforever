@@ -3,11 +3,10 @@ import { getGifts, deleteGift } from '../services/api';
 import GiftCard from '../components/GiftCard';
 import GiftSkeleton from '../components/GiftSkeleton';
 
-export default function Dashboard({ tenant, names, onLogout, onNewGift, onEditGift, onViewGift, onViewReceived }) {
+export default function Dashboard({ tenant, names, onLogout, onNewGift, onEditGift, onViewGift, onViewReceived, onViewEvent, onShareInvitation, showModal }) {
   const [gifts, setGifts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [copied, setCopied] = useState(false);
 
   // Format names as "Nome1 & Nome2" with first letter capitalized
   const formatNames = () => {
@@ -32,25 +31,21 @@ export default function Dashboard({ tenant, names, onLogout, onNewGift, onEditGi
     }
   };
 
-  const handleShare = () => {
-    const url = `${window.location.origin}/#/${tenant}/lista`;
-    navigator.clipboard.writeText(url).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
-
   const handleDelete = async (id) => {
-    if (!window.confirm('Tem certeza que deseja excluir este presente?')) {
-      return;
-    }
-
-    try {
-      await deleteGift(tenant, id);
-      setGifts(gifts.filter(g => g.id !== id));
-    } catch (err) {
-      setError(err.message || 'Falha ao excluir presente');
-    }
+    showModal({
+      title: 'Excluir Presente?',
+      message: 'Tem certeza que deseja excluir este presente? Esta ação não pode ser desfeita.',
+      confirmLabel: 'Sim, Excluir',
+      cancelLabel: 'Cancelar',
+      onConfirm: async () => {
+        try {
+          await deleteGift(tenant, id);
+          setGifts(gifts.filter(g => g.id !== id));
+        } catch (err) {
+          setError(err.message || 'Falha ao excluir presente');
+        }
+      }
+    });
   };
 
   return (
@@ -66,13 +61,13 @@ export default function Dashboard({ tenant, names, onLogout, onNewGift, onEditGi
           </div>
           <div className="flex items-center gap-3 w-full sm:w-auto">
             <button
-              onClick={handleShare}
-              className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 sm:py-2 text-sm font-bold rounded-xl border transition-all shadow-sm ${copied ? 'bg-green-50 text-green-700 border-green-200' : 'bg-white text-gold-dark border-gold-light/50 hover:border-gold hover:bg-gold/5'}`}
+              onClick={onShareInvitation}
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 sm:py-2 text-sm font-bold rounded-xl border bg-white text-gold-dark border-gold-light/50 hover:border-gold hover:bg-gold/5 transition-all shadow-sm"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
               </svg>
-              {copied ? 'Copiado!' : 'Compartilhar Lista'}
+              Compartilhar Convite
             </button>
             <button
               onClick={onLogout}
@@ -111,6 +106,15 @@ export default function Dashboard({ tenant, names, onLogout, onNewGift, onEditGi
               </div>
               
               <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-3">
+                <button
+                  onClick={onViewEvent}
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3.5 sm:py-3 px-6 rounded-xl transition-all shadow-sm"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  Convite
+                </button>
                 <button
                   onClick={onViewReceived}
                   className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3.5 sm:py-3 px-6 rounded-xl transition-all shadow-sm"

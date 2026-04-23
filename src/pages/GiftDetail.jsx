@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getGift, deleteGift, updateGift } from '../services/api';
 
-export default function GiftDetail({ tenant, giftId, onDelete, onBack }) {
+export default function GiftDetail({ tenant, giftId, onDelete, onBack, showModal }) {
   const [gift, setGift] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -13,7 +13,6 @@ export default function GiftDetail({ tenant, giftId, onDelete, onBack }) {
   // Campos editáveis
   const [nome, setNome] = useState('');
   const [imagemUrl, setImagemUrl] = useState('');
-  const [chavePix, setChavePix] = useState('');
   const [preco, setPreco] = useState('');
   const [sites, setSites] = useState([]);
 
@@ -26,7 +25,6 @@ export default function GiftDetail({ tenant, giftId, onDelete, onBack }) {
       setGift(g);
       setNome(g.nome);
       setImagemUrl(g.imagem_url || '');
-      setChavePix(g.chave_pix || '');
       setPreco(g.preco || '');
       setSites(g.sites || []);
     } catch (err) {
@@ -39,7 +37,6 @@ export default function GiftDetail({ tenant, giftId, onDelete, onBack }) {
   const handleCancelEdit = () => {
     setNome(gift.nome);
     setImagemUrl(gift.imagem_url || '');
-    setChavePix(gift.chave_pix || '');
     setPreco(gift.preco || '');
     setSites(gift.sites || []);
     setIsEditing(false);
@@ -54,7 +51,6 @@ export default function GiftDetail({ tenant, giftId, onDelete, onBack }) {
       const updated = await updateGift(tenant, giftId, {
         nome,
         imagem_url: imagemUrl || null,
-        chave_pix: chavePix || null,
         preco: preco ? parseFloat(preco) : null,
         sites: sites.filter(s => s.label && s.url),
       });
@@ -68,15 +64,22 @@ export default function GiftDetail({ tenant, giftId, onDelete, onBack }) {
   };
 
   const handleDelete = async () => {
-    if (!window.confirm('Tem certeza que deseja excluir este presente?')) return;
-    try {
-      setDeleting(true);
-      await deleteGift(tenant, giftId);
-      onDelete();
-    } catch (err) {
-      setError(err.message || 'Falha ao excluir presente');
-      setDeleting(false);
-    }
+    showModal({
+      title: 'Excluir Presente?',
+      message: 'Tem certeza que deseja excluir este presente? Esta ação não pode ser desfeita.',
+      confirmLabel: 'Sim, Excluir',
+      cancelLabel: 'Cancelar',
+      onConfirm: async () => {
+        try {
+          setDeleting(true);
+          await deleteGift(tenant, giftId);
+          onDelete();
+        } catch (err) {
+          setError(err.message || 'Falha ao excluir presente');
+          setDeleting(false);
+        }
+      }
+    });
   };
 
   const handleAddSite = () => {
@@ -230,34 +233,6 @@ export default function GiftDetail({ tenant, giftId, onDelete, onBack }) {
               </div>
             )}
 
-            {/* Chave PIX */}
-            <div>
-              <label className="block text-sm font-bold text-text-secondary mb-2 tracking-wide uppercase">Chave PIX</label>
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={chavePix}
-                  onChange={e => setChavePix(e.target.value)}
-                  className={inputClass}
-                  placeholder="CPF, E-mail, Celular ou Aleatória"
-                />
-              ) : chavePix ? (
-                <div className="flex items-center justify-between p-4 bg-cream rounded-xl border border-gold-light/30">
-                  <span className="font-mono text-text-primary break-all mr-4">{chavePix}</span>
-                  <button 
-                    onClick={() => navigator.clipboard.writeText(chavePix)}
-                    className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gold/30 text-gold-dark text-xs font-bold rounded-lg hover:bg-gold/10 transition-colors shadow-sm"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                    </svg>
-                    COPIAR
-                  </button>
-                </div>
-              ) : (
-                <p className="text-text-light italic">Nenhuma chave PIX vinculada a este presente.</p>
-              )}
-            </div>
 
             {/* Links */}
             <div>
