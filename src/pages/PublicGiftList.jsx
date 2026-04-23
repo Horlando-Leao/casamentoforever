@@ -194,7 +194,7 @@ export default function PublicGiftList({ tenant }) {
 
       {/* Modal de Reserva / Bottom Sheet */}
       {selectedGift && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 z-50 animate-fade-in">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 z-[100] animate-fade-in">
           <div 
             className="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-8 animate-slide-up-sheet sm:animate-fade-in relative"
             onClick={(e) => e.stopPropagation()}
@@ -247,7 +247,7 @@ export default function PublicGiftList({ tenant }) {
                 />
               </div>
               
-              <div className="flex gap-3 pt-4 pb-safe">
+              <div className="flex gap-3 pt-4 pb-20 sm:pb-safe">
                 <button
                   type="submit"
                   disabled={reserving}
@@ -263,7 +263,7 @@ export default function PublicGiftList({ tenant }) {
 
       {/* Modal de Sucesso / Bottom Sheet */}
       {successGift && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 z-50 animate-fade-in">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 z-[100] animate-fade-in">
           <div className="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl max-w-lg w-full p-6 sm:p-10 animate-slide-up-sheet sm:animate-fade-in text-center relative">
             <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-8 sm:hidden"></div>
             
@@ -324,7 +324,7 @@ export default function PublicGiftList({ tenant }) {
 
             <button
               onClick={closeSuccess}
-              className="w-full py-4 bg-gold hover:bg-gold-dark text-white rounded-xl font-bold text-lg shadow-md shadow-gold/20 transition-all pb-safe"
+              className="w-full py-4 bg-gold hover:bg-gold-dark text-white rounded-xl font-bold text-lg shadow-md shadow-gold/20 transition-all pb-safe mb-20 sm:mb-0"
             >
               Concluir
             </button>
