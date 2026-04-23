@@ -15,7 +15,7 @@
     }
   ],
   "rewrites": [
-    { "source": "/api/admin/:route", "destination": "/api/admin?route=:route" },
+    { "source": "/api/(.*)", "destination": "/api/index.js" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

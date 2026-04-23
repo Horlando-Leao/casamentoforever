@@ -747,13 +747,18 @@ if (process.env.NODE_ENV === 'production') {
 async function start() {
   try {
     await createTables();
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on http://localhost:${PORT}`);
-    });
+    // Only listen if not running as a Vercel function
+    if (!process.env.VERCEL) {
+      app.listen(PORT, () => {
+        console.log(`🚀 Server running on http://localhost:${PORT}`);
+      });
+    }
   } catch (error) {
     console.error('Failed to start server:', error);
-    process.exit(1);
+    if (!process.env.VERCEL) process.exit(1);
   }
 }
 
 start();
+
+export default app;
