@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import GiftForm from './pages/GiftForm';
 import GiftDetail from './pages/GiftDetail';
 import PublicGiftList from './pages/PublicGiftList';
+import BottomNav from './components/BottomNav';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('login');
@@ -92,8 +93,32 @@ function App() {
     navigateTo('login');
   };
 
+  const getBottomNavView = () => {
+    if (currentPage === 'public-list') return 'list';
+    if (['login', 'register'].includes(currentPage)) return 'login';
+    if (['dashboard', 'gift-form', 'gift-detail'].includes(currentPage)) return 'dashboard';
+    return 'home';
+  };
+
+  const handleBottomNavChange = (view) => {
+    if (view === 'home' || view === 'dashboard') {
+      if (isAuthenticated && tenant) {
+        navigateTo('dashboard', tenant);
+      } else {
+        navigateTo('login');
+      }
+    } else if (view === 'list') {
+      if (tenant) {
+        window.location.hash = `#/${tenant}/lista`;
+        setCurrentPage('public-list');
+      }
+    } else if (view === 'login') {
+      navigateTo('login');
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-cream">
+    <div className="min-h-dvh bg-cream pb-safe-nav md:pb-0">
       {currentPage === 'login' && (
         <Login onLoginSuccess={(t) => {
           setIsAuthenticated(true);
@@ -141,6 +166,16 @@ function App() {
       )}
       {currentPage === 'public-list' && tenant && (
         <PublicGiftList tenant={tenant} />
+      )}
+
+      {/* Bottom Navigation for Mobile */}
+      {tenant && (
+        <BottomNav 
+          currentView={getBottomNavView()} 
+          onViewChange={handleBottomNavChange} 
+          isAuthenticated={isAuthenticated} 
+          tenant={tenant} 
+        />
       )}
     </div>
   );

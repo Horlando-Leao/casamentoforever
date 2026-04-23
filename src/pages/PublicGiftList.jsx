@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getPublicGifts, reserveGift } from '../services/api';
+import GiftSkeleton from '../components/GiftSkeleton';
 
 export default function PublicGiftList({ tenant }) {
   const [gifts, setGifts] = useState([]);
@@ -70,9 +71,21 @@ export default function PublicGiftList({ tenant }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-cream flex flex-col items-center justify-center">
-        <div className="w-12 h-12 border-4 border-gold border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p className="text-gold-dark font-medium animate-pulse">Preparando a lista de presentes...</p>
+      <div className="min-h-screen bg-cream">
+        <header className="relative bg-white overflow-hidden border-b border-cream-dark">
+          <div className="max-w-4xl mx-auto px-6 py-16 md:py-24 text-center">
+            <div className="h-4 bg-gray-200 rounded-full w-24 mx-auto mb-6 animate-pulse"></div>
+            <div className="h-12 bg-gray-200 rounded-lg w-64 mx-auto mb-6 animate-pulse"></div>
+            <div className="h-4 bg-gray-200 rounded-full w-full max-w-md mx-auto animate-pulse"></div>
+          </div>
+        </header>
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 -mt-8 relative z-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+            {[...Array(8)].map((_, i) => (
+              <GiftSkeleton key={i} />
+            ))}
+          </div>
+        </main>
       </div>
     );
   }
@@ -179,55 +192,68 @@ export default function PublicGiftList({ tenant }) {
         )}
       </main>
 
-      {/* Modal de Reserva */}
+      {/* Modal de Reserva / Bottom Sheet */}
       {selectedGift && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
-            <h2 className="text-2xl font-display text-rose-gold mb-4">Presentear: {selectedGift.nome}</h2>
-            <p className="text-sm text-gray-600 mb-6">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 z-50 animate-fade-in">
+          <div 
+            className="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-8 animate-slide-up-sheet sm:animate-fade-in relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Handle para mobile */}
+            <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6 sm:hidden"></div>
+            
+            <h2 className="text-2xl font-display text-text-primary mb-4 pr-8">Presentear: {selectedGift.nome}</h2>
+            <button 
+              onClick={() => setSelectedGift(null)}
+              className="absolute top-6 right-6 text-text-light hover:text-text-primary transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            
+            <p className="text-sm text-text-secondary mb-8 leading-relaxed">
               Para reservar este presente, precisamos de alguns dados. Assim garantimos que o presente seja único!
             </p>
             
-            {reserveError && <div className="mb-4 p-3 bg-red-50 text-red-700 text-sm rounded">{reserveError}</div>}
+            {reserveError && <div className="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 text-sm rounded-xl font-medium flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              {reserveError}
+            </div>}
             
-            <form onSubmit={submitReserve} className="space-y-4">
+            <form onSubmit={submitReserve} className="space-y-6">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Seu Nome</label>
+                <label className="block text-xs font-bold text-text-secondary mb-2 uppercase tracking-wider">Seu Nome</label>
                 <input
                   type="text"
                   required
                   value={guestName}
                   onChange={e => setGuestName(e.target.value)}
-                  className="w-full px-4 py-2 border border-gold border-opacity-30 rounded-lg focus:ring-2 focus:ring-gold outline-none"
+                  className="w-full px-5 py-4 bg-gray-50 border border-cream-dark rounded-xl focus:ring-2 focus:ring-gold-light focus:border-gold outline-none transition-all text-lg"
                   placeholder="Ex: João da Silva"
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">WhatsApp</label>
+                <label className="block text-xs font-bold text-text-secondary mb-2 uppercase tracking-wider">WhatsApp</label>
                 <input
-                  type="text"
+                  type="tel"
                   required
                   value={guestWhatsapp}
                   onChange={e => setGuestWhatsapp(e.target.value)}
-                  className="w-full px-4 py-2 border border-gold border-opacity-30 rounded-lg focus:ring-2 focus:ring-gold outline-none"
+                  className="w-full px-5 py-4 bg-gray-50 border border-cream-dark rounded-xl focus:ring-2 focus:ring-gold-light focus:border-gold outline-none transition-all text-lg"
                   placeholder="Ex: 11999999999"
                 />
               </div>
               
-              <div className="flex gap-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => setSelectedGift(null)}
-                  className="flex-1 px-4 py-2 border border-gold text-gold rounded-lg font-semibold hover:bg-gold/10"
-                >
-                  Cancelar
-                </button>
+              <div className="flex gap-3 pt-4 pb-safe">
                 <button
                   type="submit"
                   disabled={reserving}
-                  className="flex-1 px-4 py-2 bg-gold text-white rounded-lg font-semibold hover:bg-gold/90 disabled:opacity-70"
+                  className="w-full py-4 bg-gold hover:bg-gold-dark text-white rounded-xl font-bold text-lg shadow-md shadow-gold/20 transition-all disabled:opacity-50"
                 >
-                  {reserving ? 'Reservando...' : 'Confirmar'}
+                  {reserving ? 'Reservando...' : 'Confirmar Reserva'}
                 </button>
               </div>
             </form>
@@ -235,29 +261,31 @@ export default function PublicGiftList({ tenant }) {
         </div>
       )}
 
-      {/* Modal de Sucesso (Instruções de pagamento) */}
+      {/* Modal de Sucesso / Bottom Sheet */}
       {successGift && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 text-center">
-            <div className="text-5xl mb-4">🎉</div>
-            <h2 className="text-3xl font-display text-rose-gold mb-2">Muito Obrigado!</h2>
-            <p className="text-gray-600 mb-6">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 z-50 animate-fade-in">
+          <div className="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl max-w-lg w-full p-6 sm:p-10 animate-slide-up-sheet sm:animate-fade-in text-center relative">
+            <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-8 sm:hidden"></div>
+            
+            <div className="text-6xl mb-6">🎉</div>
+            <h2 className="text-3xl font-display text-text-primary mb-3">Muito Obrigado!</h2>
+            <p className="text-text-secondary mb-8 text-lg">
               Você acabou de reservar <strong>{successGift.nome}</strong> para os noivos!
             </p>
 
-            <div className="bg-cream p-4 rounded-lg mb-6 text-left border border-gold border-opacity-20">
-              <h4 className="font-semibold text-gray-800 mb-3 text-center">Como finalizar seu presente:</h4>
+            <div className="bg-cream-alt p-6 rounded-2xl mb-8 text-left border border-gold-light/30 shadow-inner">
+              <h4 className="font-bold text-text-primary mb-4 text-center uppercase tracking-widest text-xs">Instruções para o Presente</h4>
               
               {successGift.chave_pix ? (
-                <div className="mb-4">
-                  <p className="text-sm text-gray-600 mb-1">Chave PIX para transferência:</p>
-                  <div className="bg-white p-3 rounded border border-gray-200 font-mono text-rose-gold text-sm break-all flex justify-between items-center">
-                    <span>{successGift.chave_pix}</span>
+                <div className="mb-6">
+                  <p className="text-xs font-bold text-text-secondary mb-2 uppercase">Chave PIX</p>
+                  <div className="bg-white p-4 rounded-xl border border-cream-dark font-mono text-text-primary text-sm break-all flex justify-between items-center shadow-sm">
+                    <span className="mr-4">{successGift.chave_pix}</span>
                     <button 
                       onClick={() => navigator.clipboard.writeText(successGift.chave_pix)}
-                      className="ml-2 px-2 py-1 bg-gold/10 text-gold text-xs rounded hover:bg-gold/20"
+                      className="shrink-0 px-3 py-1.5 bg-gold/10 text-gold-dark text-xs font-bold rounded-lg hover:bg-gold/20 transition-colors"
                     >
-                      Copiar
+                      COPIAR
                     </button>
                   </div>
                 </div>
@@ -265,17 +293,20 @@ export default function PublicGiftList({ tenant }) {
 
               {successGift.sites && successGift.sites.length > 0 ? (
                 <div>
-                  <p className="text-sm text-gray-600 mb-2">Links para compra:</p>
-                  <div className="space-y-2">
+                  <p className="text-xs font-bold text-text-secondary mb-3 uppercase">Onde Comprar</p>
+                  <div className="space-y-3">
                     {successGift.sites.map((site, i) => (
                       <a 
                         key={i} 
                         href={site.url} 
                         target="_blank" 
                         rel="noreferrer"
-                        className="block w-full text-center py-2 bg-white border border-gold text-gold rounded hover:bg-gold hover:text-white transition"
+                        className="flex items-center justify-between p-4 bg-white border border-gold-light/40 text-text-primary rounded-xl hover:border-gold hover:shadow-md transition-all group"
                       >
-                        Comprar na loja: {site.label}
+                        <span className="font-semibold">{site.label}</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gold-light group-hover:text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
                       </a>
                     ))}
                   </div>
@@ -283,15 +314,17 @@ export default function PublicGiftList({ tenant }) {
               ) : null}
 
               {!successGift.chave_pix && (!successGift.sites || successGift.sites.length === 0) && (
-                <p className="text-sm text-gray-500 text-center italic">
-                  (O casal não forneceu instruções automáticas. Entre em contato com eles!)
-                </p>
+                <div className="py-4 text-center">
+                  <p className="text-sm text-text-light italic">
+                    O casal não forneceu instruções automáticas.<br/>Por favor, entre em contato com eles!
+                  </p>
+                </div>
               )}
             </div>
 
             <button
               onClick={closeSuccess}
-              className="w-full px-6 py-3 bg-gold text-white rounded-lg font-semibold hover:bg-gold/90 transition"
+              className="w-full py-4 bg-gold hover:bg-gold-dark text-white rounded-xl font-bold text-lg shadow-md shadow-gold/20 transition-all pb-safe"
             >
               Concluir
             </button>

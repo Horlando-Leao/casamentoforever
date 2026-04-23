@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getGifts, deleteGift } from '../services/api';
 import GiftCard from '../components/GiftCard';
+import GiftSkeleton from '../components/GiftSkeleton';
 
 export default function Dashboard({ tenant, names, onLogout, onNewGift, onEditGift, onViewGift }) {
   const [gifts, setGifts] = useState([]);
@@ -95,9 +96,10 @@ export default function Dashboard({ tenant, names, onLogout, onNewGift, onEditGi
         )}
 
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <div className="w-10 h-10 border-4 border-gold border-t-transparent rounded-full animate-spin mb-4"></div>
-            <p className="text-gold-dark font-medium animate-pulse">Carregando presentes...</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+            {[...Array(4)].map((_, i) => (
+              <GiftSkeleton key={i} />
+            ))}
           </div>
         ) : (
           <>
