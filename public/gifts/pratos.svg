@@ -1,10 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
-  <rect width="400" height="300" fill="#f8f4ef"/>
-  <ellipse cx="200" cy="165" rx="120" ry="18" fill="#e8e0d4"/>
-  <ellipse cx="200" cy="150" rx="110" ry="16" fill="white" stroke="#c9a84c" stroke-width="2"/>
-  <ellipse cx="200" cy="135" rx="100" ry="14" fill="white" stroke="#c9a84c" stroke-width="2"/>
-  <ellipse cx="200" cy="120" rx="90" ry="13" fill="white" stroke="#c9a84c" stroke-width="2.5"/>
-  <ellipse cx="200" cy="120" rx="60" ry="8" fill="white" stroke="#d4af6a" stroke-width="1.5"/>
-  <ellipse cx="200" cy="120" rx="30" ry="4" fill="white" stroke="#c9a84c" stroke-width="1"/>
-  <text x="200" y="265" font-family="Arial" font-size="18" fill="#b08d57" text-anchor="middle" font-weight="600">Jogo de Pratos</text>
+  <rect width="400" height="300" fill="#fdf4ff"/>
+  <!-- Large Plate -->
+  <ellipse cx="200" cy="160" rx="90" ry="30" fill="#f0abfc" stroke="#d946ef" stroke-width="4"/>
+  <!-- Medium Plate -->
+  <ellipse cx="200" cy="150" rx="75" ry="25" fill="#fdf4ff" stroke="#d946ef" stroke-width="3"/>
+  <!-- Small Plate -->
+  <ellipse cx="200" cy="140" rx="60" ry="20" fill="#ffffff" stroke="#f0abfc" stroke-width="2"/>
+  <!-- Cup / Bowl -->
+  <path d="M170 120 C170 140 230 140 230 120 Z" fill="#d946ef"/>
+  <!-- Stack base shadow -->
+  <ellipse cx="200" cy="165" rx="80" ry="25" fill="#000000" opacity="0.1"/>
+  <!-- Sparkles -->
+  <path d="M120 100 L125 110 L135 115 L125 120 L120 130 L115 120 L105 115 L115 110 Z" fill="#fbbf24"/>
+  <path d="M280 120 L283 126 L289 129 L283 132 L280 138 L277 132 L271 129 L277 126 Z" fill="#fbbf24"/>
 </svg>

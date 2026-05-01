@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
+  <rect width="400" height="300" fill="#f0fdfa"/>
+  <!-- Handle extended -->
+  <rect x="160" y="50" width="80" height="150" rx="5" fill="#cbd5e1" stroke="#94a3b8" stroke-width="6"/>
+  <rect x="150" y="40" width="100" height="15" rx="5" fill="#64748b"/>
+  <!-- Wheels -->
+  <circle cx="140" cy="250" r="15" fill="#1e293b"/>
+  <circle cx="140" cy="250" r="8" fill="#94a3b8"/>
+  <circle cx="260" cy="250" r="15" fill="#1e293b"/>
+  <circle cx="260" cy="250" r="8" fill="#94a3b8"/>
+  <!-- Suitcase Body -->
+  <rect x="120" y="100" width="160" height="150" rx="20" fill="#0ea5e9"/>
+  <!-- Suitcase details (ribs) -->
+  <rect x="140" y="120" width="10" height="110" rx="5" fill="#0284c7"/>
+  <rect x="175" y="120" width="10" height="110" rx="5" fill="#0284c7"/>
+  <rect x="215" y="120" width="10" height="110" rx="5" fill="#0284c7"/>
+  <rect x="250" y="120" width="10" height="110" rx="5" fill="#0284c7"/>
+  <!-- Sticker -->
+  <circle cx="230" cy="150" r="20" fill="#fbbf24"/>
+  <path d="M220 150 L240 150 M230 140 L230 160" stroke="#d97706" stroke-width="2"/>
+  <path d="M223 143 L237 157 M223 157 L237 143" stroke="#d97706" stroke-width="2"/>
+</svg>

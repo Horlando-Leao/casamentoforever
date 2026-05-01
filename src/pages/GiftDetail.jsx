@@ -12,6 +12,7 @@ export default function GiftDetail({ tenant, giftId, onDelete, onBack, showModal
 
   // Campos editáveis
   const [nome, setNome] = useState('');
+  const [descricao, setDescricao] = useState('');
   const [imagemUrl, setImagemUrl] = useState('');
   const [preco, setPreco] = useState('');
   const [sites, setSites] = useState([]);
@@ -24,6 +25,7 @@ export default function GiftDetail({ tenant, giftId, onDelete, onBack, showModal
       const g = data.gift;
       setGift(g);
       setNome(g.nome);
+      setDescricao(g.descricao || '');
       setImagemUrl(g.imagem_url || '');
       setPreco(g.preco || '');
       setSites(g.sites || []);
@@ -36,6 +38,7 @@ export default function GiftDetail({ tenant, giftId, onDelete, onBack, showModal
 
   const handleCancelEdit = () => {
     setNome(gift.nome);
+    setDescricao(gift.descricao || '');
     setImagemUrl(gift.imagem_url || '');
     setPreco(gift.preco || '');
     setSites(gift.sites || []);
@@ -50,6 +53,7 @@ export default function GiftDetail({ tenant, giftId, onDelete, onBack, showModal
     try {
       const updated = await updateGift(tenant, giftId, {
         nome,
+        descricao: descricao || null,
         imagem_url: imagemUrl || null,
         preco: preco ? parseFloat(preco) : null,
         sites: sites.filter(s => s.label && s.url),
@@ -192,6 +196,26 @@ export default function GiftDetail({ tenant, giftId, onDelete, onBack, showModal
                   className={inputClass}
                   placeholder="Ex: Jogo de Panelas"
                 />
+              </div>
+            )}
+
+            {/* Descrição */}
+            {(isEditing || descricao) && (
+              <div>
+                <label className="block text-sm font-bold text-text-secondary mb-2 tracking-wide uppercase">Descrição</label>
+                {isEditing ? (
+                  <textarea
+                    value={descricao}
+                    onChange={e => setDescricao(e.target.value)}
+                    className={`${inputClass} resize-none`}
+                    placeholder="Descrição do presente..."
+                    rows={3}
+                  />
+                ) : (
+                  <div className="text-text-secondary italic bg-cream-alt/20 p-4 rounded-xl border border-cream-dark/30">
+                    "{descricao}"
+                  </div>
+                )}
               </div>
             )}
 

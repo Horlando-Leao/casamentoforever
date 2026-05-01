@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
+  <rect width="400" height="300" fill="#fef2f2"/>
+  <!-- Legs -->
+  <rect x="160" y="200" width="20" height="30" rx="5" fill="#e11d48"/>
+  <rect x="220" y="200" width="20" height="30" rx="5" fill="#e11d48"/>
+  <!-- Body -->
+  <ellipse cx="200" cy="150" rx="80" ry="65" fill="#f43f5e"/>
+  <!-- Snout -->
+  <ellipse cx="250" cy="150" rx="25" ry="35" fill="#fda4af" transform="rotate(15 250 150)"/>
+  <circle cx="255" cy="140" r="5" fill="#be123c"/>
+  <circle cx="265" cy="160" r="5" fill="#be123c"/>
+  <!-- Eye -->
+  <circle cx="210" cy="120" r="8" fill="#111827"/>
+  <circle cx="212" cy="118" r="3" fill="#ffffff"/>
+  <!-- Ears -->
+  <path d="M160 90 Q150 70 170 80 Z" fill="#e11d48"/>
+  <path d="M190 85 Q180 60 200 75 Z" fill="#fda4af"/>
+  <!-- Tail -->
+  <path d="M120 150 Q100 130 110 110 Q120 90 100 100" stroke="#f43f5e" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <!-- Coin Slot -->
+  <rect x="180" y="85" width="40" height="8" rx="4" fill="#881337"/>
+  <!-- Coin -->
+  <circle cx="200" cy="65" r="20" fill="#fbbf24"/>
+  <circle cx="200" cy="65" r="15" fill="#f59e0b"/>
+  <path d="M200 55 L200 75 M190 65 L210 65" stroke="#d97706" stroke-width="2"/>
+</svg>

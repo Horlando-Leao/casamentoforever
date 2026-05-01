@@ -29,11 +29,17 @@ export default function GiftCard({ gift, onView, onEdit, onDelete }) {
 
       <div className="p-5">
         <h3
-          className="font-display text-xl font-semibold text-text-primary mb-2 cursor-pointer hover:text-gold-dark transition-colors line-clamp-2"
+          className="font-display text-xl font-semibold text-text-primary mb-1 cursor-pointer hover:text-gold-dark transition-colors line-clamp-2"
           onClick={onView}
         >
           {gift.nome}
         </h3>
+
+        {gift.descricao && (
+          <p className="text-xs text-text-secondary line-clamp-2 mb-3 italic opacity-80">
+            "{gift.descricao}"
+          </p>
+        )}
 
         {gift.preco && (
           <p className="text-gold-dark font-bold text-lg mb-3">

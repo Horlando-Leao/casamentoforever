@@ -136,6 +136,7 @@ function DefaultGiftsModal({ onSelect, onClose }) {
 // ─── Formulário Principal ─────────────────────────────────────────────────────
 export default function GiftForm({ tenant, giftId, onSave, onCancel }) {
   const [nome, setNome] = useState('');
+  const [descricao, setDescricao] = useState('');
   const [imagemUrl, setImagemUrl] = useState('');
   const [preco, setPreco] = useState('');
   const [sites, setSites] = useState([]);
@@ -155,6 +156,7 @@ export default function GiftForm({ tenant, giftId, onSave, onCancel }) {
       const data = await getGift(tenant, giftId);
       const gift = data.gift;
       setNome(gift.nome);
+      setDescricao(gift.descricao || '');
       setImagemUrl(gift.imagem_url || '');
       setPreco(gift.preco || '');
       setSites(gift.sites || []);
@@ -167,6 +169,7 @@ export default function GiftForm({ tenant, giftId, onSave, onCancel }) {
 
   const handleSelectDefault = (gift) => {
     setNome(gift.nome);
+    setDescricao(gift.descricao || '');
     setImagemUrl(gift.imagem_url);
     setPreco(String(gift.preco));
     setSites(gift.sites || []);
@@ -203,6 +206,7 @@ export default function GiftForm({ tenant, giftId, onSave, onCancel }) {
 
       const giftData = {
         nome,
+        descricao: descricao || null,
         imagem_url: imagemUrl || null,
         preco: preco ? parseFloat(preco) : null,
         sites: sites.filter(s => s.label && s.url),
@@ -308,6 +312,20 @@ export default function GiftForm({ tenant, giftId, onSave, onCancel }) {
               placeholder="Ex: Batedeira KitchenAid"
               className="w-full px-4 py-2.5 border border-gold border-opacity-30 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent outline-none transition bg-white"
               required
+            />
+          </div>
+
+          {/* Descrição */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Descrição (opcional)
+            </label>
+            <textarea
+              value={descricao}
+              onChange={(e) => setDescricao(e.target.value)}
+              placeholder="Conte algo engraçado sobre esse presente..."
+              rows={3}
+              className="w-full px-4 py-2.5 border border-gold border-opacity-30 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent outline-none transition bg-white resize-none"
             />
           </div>
 

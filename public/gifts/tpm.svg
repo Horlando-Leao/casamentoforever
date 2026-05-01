@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
+  <rect width="400" height="300" fill="#fff1f2"/>
+  <!-- Chocolate Bar -->
+  <rect x="120" y="80" width="160" height="140" rx="10" fill="#78350f" transform="rotate(-10 200 150)"/>
+  <!-- Chocolate pieces -->
+  <g transform="rotate(-10 200 150)">
+    <rect x="130" y="90" width="65" height="40" rx="5" fill="#92400e"/>
+    <rect x="205" y="90" width="65" height="40" rx="5" fill="#92400e"/>
+    <rect x="130" y="140" width="65" height="40" rx="5" fill="#92400e"/>
+    <rect x="205" y="140" width="65" height="40" rx="5" fill="#92400e"/>
+    <rect x="130" y="190" width="65" height="20" rx="5" fill="#92400e"/>
+    <rect x="205" y="190" width="65" height="20" rx="5" fill="#92400e"/>
+  </g>
+  <!-- Wrapper -->
+  <path d="M100 170 Q200 120 300 200 L310 250 L110 250 Z" fill="#e11d48"/>
+  <path d="M100 170 Q200 120 300 200" stroke="#be123c" stroke-width="4" fill="none"/>
+  <!-- Heart -->
+  <path d="M200 190 C200 190 180 170 180 160 C180 150 195 150 200 160 C205 150 220 150 220 160 C220 170 200 190 200 190 Z" fill="#fecdd3"/>
+</svg>

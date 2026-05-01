@@ -1,12 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
-  <rect width="400" height="300" fill="#f8f4ef"/>
-  <ellipse cx="200" cy="155" rx="90" ry="20" fill="#e8e0d4"/>
-  <circle cx="200" cy="140" r="80" fill="#2d2d2d"/>
-  <circle cx="200" cy="140" r="68" fill="#3a3a3a"/>
-  <circle cx="200" cy="140" r="30" fill="#c9a84c"/>
-  <circle cx="200" cy="140" r="18" fill="#b8974a"/>
-  <circle cx="200" cy="140" r="8" fill="#2d2d2d"/>
-  <path d="M200 60 Q230 55 240 40" stroke="#555" stroke-width="6" stroke-linecap="round" fill="none"/>
-  <circle cx="200" cy="165" r="12" fill="#555"/>
-  <text x="200" y="265" font-family="Arial" font-size="18" fill="#b08d57" text-anchor="middle" font-weight="600">Robô Aspirador</text>
+  <rect width="400" height="300" fill="#f0f4f8"/>
+  <circle cx="200" cy="150" r="100" fill="#334155" />
+  <circle cx="200" cy="150" r="90" fill="#1e293b" />
+  <circle cx="200" cy="150" r="80" fill="#0f172a" />
+  <circle cx="200" cy="150" r="25" fill="#3b82f6" opacity="0.8" />
+  <circle cx="200" cy="150" r="10" fill="#bfdbfe" />
+  <path d="M120 150 Q160 110 200 150 Q240 190 280 150" stroke="#475569" stroke-width="4" stroke-linecap="round" />
+  <rect x="290" y="140" width="10" height="20" rx="3" fill="#ef4444" />
+  <rect x="100" y="140" width="10" height="20" rx="3" fill="#10b981" />
+  <circle cx="150" cy="90" r="8" fill="#cbd5e1" opacity="0.5" />
+  <circle cx="165" cy="80" r="6" fill="#cbd5e1" opacity="0.3" />
+  <circle cx="180" cy="70" r="4" fill="#cbd5e1" opacity="0.1" />
 </svg>

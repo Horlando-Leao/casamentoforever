@@ -344,6 +344,12 @@ export default function PublicEventDetail({ qrToken }) {
                       {gift.nome}
                     </h3>
                     
+                    {gift.descricao && (
+                      <p className="text-sm text-text-secondary line-clamp-2 mb-4 italic">
+                        "{gift.descricao}"
+                      </p>
+                    )}
+                    
                     <div className="flex-grow"></div>
                     
                     {gift.preco && (
@@ -398,9 +404,15 @@ export default function PublicEventDetail({ qrToken }) {
               </svg>
             </button>
             
-            <p className="text-sm text-text-secondary mb-8 leading-relaxed">
+            <p className="text-sm text-text-secondary mb-4 leading-relaxed">
               Para reservar este presente, precisamos de alguns dados. Assim garantimos que o presente seja único!
             </p>
+
+            {selectedGift.descricao && (
+              <div className="mb-6 p-4 bg-cream-alt/30 rounded-xl border border-cream-dark/50 italic text-sm text-text-secondary text-center">
+                "{selectedGift.descricao}"
+              </div>
+            )}
             
             {reserveError && <div className="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 text-sm rounded-xl font-medium flex items-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">

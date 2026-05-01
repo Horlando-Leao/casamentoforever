@@ -1,15 +1,22 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
-  <rect width="400" height="300" fill="#f8f4ef"/>
-  <rect x="60" y="70" width="280" height="170" rx="18" fill="#2d2d2d"/>
-  <rect x="80" y="90" width="175" height="130" rx="10" fill="#1a1a1a"/>
-  <rect x="82" y="92" width="171" height="126" rx="9" fill="#0a0a0a"/>
-  <ellipse cx="167" cy="155" rx="50" ry="40" fill="none" stroke="#333" stroke-width="3"/>
-  <circle cx="167" cy="155" r="5" fill="#555"/>
-  <rect x="265" y="90" width="60" height="130" rx="6" fill="#3a3a3a"/>
-  <circle cx="295" cy="115" r="12" fill="#c9a84c"/>
-  <circle cx="295" cy="145" r="8" fill="#555"/>
-  <circle cx="295" cy="165" r="8" fill="#555"/>
-  <circle cx="295" cy="185" r="8" fill="#555"/>
-  <rect x="265" y="205" width="60" height="3" fill="#555"/>
-  <text x="200" y="265" font-family="Arial" font-size="18" fill="#b08d57" text-anchor="middle" font-weight="600">Micro-ondas</text>
+  <rect width="400" height="300" fill="#faf5ff"/>
+  <!-- Main Body -->
+  <rect x="80" y="100" width="240" height="140" rx="15" fill="#e9d5ff"/>
+  <rect x="90" y="110" width="220" height="120" rx="10" fill="#ffffff"/>
+  <!-- Door window -->
+  <rect x="100" y="120" width="130" height="100" rx="8" fill="#1e1b4b"/>
+  <!-- Inner light/glow -->
+  <rect x="110" y="130" width="110" height="80" rx="5" fill="#fbbf24" opacity="0.4"/>
+  <!-- Plate -->
+  <ellipse cx="165" cy="190" rx="40" ry="10" fill="#cbd5e1" opacity="0.8"/>
+  <!-- Control Panel -->
+  <rect x="245" y="120" width="55" height="100" rx="5" fill="#f3e8ff"/>
+  <rect x="255" y="130" width="35" height="20" rx="3" fill="#0f172a"/>
+  <text x="272.5" y="145" font-family="monospace" font-size="12" fill="#22c55e" text-anchor="middle" font-weight="bold">1:30</text>
+  <!-- Buttons -->
+  <circle cx="262" cy="165" r="4" fill="#a855f7"/>
+  <circle cx="282" cy="165" r="4" fill="#a855f7"/>
+  <circle cx="262" cy="180" r="4" fill="#a855f7"/>
+  <circle cx="282" cy="180" r="4" fill="#a855f7"/>
+  <rect x="260" y="195" width="25" height="15" rx="3" fill="#d8b4fe"/>
 </svg>
