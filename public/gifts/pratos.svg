@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
+  <rect width="400" height="300" fill="#f8f4ef"/>
+  <ellipse cx="200" cy="165" rx="120" ry="18" fill="#e8e0d4"/>
+  <ellipse cx="200" cy="150" rx="110" ry="16" fill="white" stroke="#c9a84c" stroke-width="2"/>
+  <ellipse cx="200" cy="135" rx="100" ry="14" fill="white" stroke="#c9a84c" stroke-width="2"/>
+  <ellipse cx="200" cy="120" rx="90" ry="13" fill="white" stroke="#c9a84c" stroke-width="2.5"/>
+  <ellipse cx="200" cy="120" rx="60" ry="8" fill="white" stroke="#d4af6a" stroke-width="1.5"/>
+  <ellipse cx="200" cy="120" rx="30" ry="4" fill="white" stroke="#c9a84c" stroke-width="1"/>
+  <text x="200" y="265" font-family="Arial" font-size="18" fill="#b08d57" text-anchor="middle" font-weight="600">Jogo de Pratos</text>
+</svg>

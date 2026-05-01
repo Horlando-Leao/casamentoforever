@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
+  <rect width="400" height="300" fill="#f8f4ef"/>
+  <rect x="120" y="40" width="14" height="130" rx="7" fill="#c9a84c"/>
+  <rect x="124" y="40" width="6" height="50" rx="3" fill="#b8974a"/>
+  <ellipse cx="127" cy="195" rx="18" ry="25" fill="#c9a84c"/>
+  <line x1="127" y1="170" x2="127" y2="220" stroke="#c9a84c" stroke-width="8" stroke-linecap="round"/>
+  <rect x="186" y="40" width="14" height="180" rx="7" fill="#c9a84c"/>
+  <rect x="190" y="40" width="6" height="40" rx="3" fill="#b8974a"/>
+  <ellipse cx="193" cy="30" rx="12" ry="18" fill="#c9a84c"/>
+  <rect x="252" y="40" width="14" height="180" rx="7" fill="#c9a84c"/>
+  <path d="M252 40 Q266 60 266 90 Q266 110 252 120" stroke="#c9a84c" stroke-width="3" fill="none"/>
+  <text x="200" y="265" font-family="Arial" font-size="18" fill="#b08d57" text-anchor="middle" font-weight="600">Jogo de Talheres</text>
+</svg>

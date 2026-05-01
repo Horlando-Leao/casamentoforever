@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
+  <rect width="400" height="300" fill="#f8f4ef"/>
+  <rect x="155" y="190" width="90" height="20" rx="6" fill="#2d2d2d"/>
+  <rect x="165" y="170" width="70" height="25" rx="4" fill="#3a3a3a"/>
+  <circle cx="185" cy="183" r="5" fill="#c9a84c"/>
+  <circle cx="200" cy="183" r="5" fill="#555"/>
+  <circle cx="215" cy="183" r="5" fill="#555"/>
+  <path d="M175 60 L160 170 L240 170 L225 60 Z" fill="#e8f4f8" stroke="#b0d0e0" stroke-width="2"/>
+  <path d="M175 60 L225 60 L220 80 L180 80 Z" fill="#c9a84c"/>
+  <path d="M168 130 Q160 135 158 145 L162 145 Q164 138 172 134 Z" fill="#b0d0e0"/>
+  <rect x="222" y="100" width="20" height="8" rx="3" fill="#e8f4f8"/>
+  <text x="200" y="265" font-family="Arial" font-size="18" fill="#b08d57" text-anchor="middle" font-weight="600">Liquidificador</text>
+</svg>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
+  <rect width="400" height="300" fill="#f8f4ef"/>
+  <rect x="60" y="70" width="280" height="170" rx="18" fill="#2d2d2d"/>
+  <rect x="80" y="90" width="175" height="130" rx="10" fill="#1a1a1a"/>
+  <rect x="82" y="92" width="171" height="126" rx="9" fill="#0a0a0a"/>
+  <ellipse cx="167" cy="155" rx="50" ry="40" fill="none" stroke="#333" stroke-width="3"/>
+  <circle cx="167" cy="155" r="5" fill="#555"/>
+  <rect x="265" y="90" width="60" height="130" rx="6" fill="#3a3a3a"/>
+  <circle cx="295" cy="115" r="12" fill="#c9a84c"/>
+  <circle cx="295" cy="145" r="8" fill="#555"/>
+  <circle cx="295" cy="165" r="8" fill="#555"/>
+  <circle cx="295" cy="185" r="8" fill="#555"/>
+  <rect x="265" y="205" width="60" height="3" fill="#555"/>
+  <text x="200" y="265" font-family="Arial" font-size="18" fill="#b08d57" text-anchor="middle" font-weight="600">Micro-ondas</text>
+</svg>

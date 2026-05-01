@@ -224,11 +224,11 @@ export default function GiftDetail({ tenant, giftId, onDelete, onBack, showModal
               <div>
                 <label className="block text-sm font-bold text-text-secondary mb-2 tracking-wide uppercase">URL da Imagem</label>
                 <input
-                  type="url"
+                  type="text"
                   value={imagemUrl}
                   onChange={e => setImagemUrl(e.target.value)}
                   className={inputClass}
-                  placeholder="https://exemplo.com/imagem.jpg"
+                  placeholder="https://exemplo.com/imagem.jpg ou /gifts/panelas.png"
                 />
               </div>
             )}
