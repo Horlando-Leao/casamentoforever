@@ -9,7 +9,7 @@ export const DEFAULT_GIFTS = [
     id: 'tpm',
     nome: '<<Descreva o que você quer receber em forma de dinheiro>>',
     preco: 100,
-    imagem_url: '/gifts/dinheiroparacasal.png',
+    imagem_url: '/gifts/dinheiroparacasal.webp',
     categoria: 'Sobrevivência',
     emoji: '🍫',
     descricao: 'Para quem desejar nos presentear, optamos por receber uma contribuição em dinheiro, que será utilizada para realizar nossos sonhos e construir nossa nova vida juntos.',
