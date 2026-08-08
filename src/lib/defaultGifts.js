@@ -7,6 +7,16 @@ export const DEFAULT_GIFTS = [
   // --- COTAS DE SOBREVIVÊNCIA ---
   {
     id: 'tpm',
+    nome: '<<Descreva o que você quer receber em forma de dinheiro>>',
+    preco: 100,00,
+    imagem_url: '/gifts/dinheiroparacasal.png',
+    categoria: 'Sobrevivência',
+    emoji: '🍫',
+    descricao: 'Para quem desejar nos presentear, optamos por receber uma contribuição em dinheiro, que será utilizada para realizar nossos sonhos e construir nossa nova vida juntos.',
+    sites: [],
+  },
+  {
+    id: 'tpm',
     nome: 'Fundo de Emergência para TPM',
     preco: 50,
     imagem_url: '/gifts/tpm.svg',
