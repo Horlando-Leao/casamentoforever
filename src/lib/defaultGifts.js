@@ -8,7 +8,7 @@ export const DEFAULT_GIFTS = [
   {
     id: 'tpm',
     nome: '<<Descreva o que você quer receber em forma de dinheiro>>',
-    preco: 100,00,
+    preco: 100,
     imagem_url: '/gifts/dinheiroparacasal.png',
     categoria: 'Sobrevivência',
     emoji: '🍫',
