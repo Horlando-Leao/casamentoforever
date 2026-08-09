@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { getInvitationByQRToken, getPublicGifts, reserveGift } from '../services/api';
 import GiftSkeleton from '../components/GiftSkeleton';
 import Countdown from '../components/Countdown';
+import { shuffleArray } from '../lib/shuffleArray';
 
 export default function PublicEventDetail({ qrToken }) {
   const giftsRef = useRef(null);
@@ -49,7 +50,7 @@ export default function PublicEventDetail({ qrToken }) {
     try {
       setGiftsLoading(true);
       const data = await getPublicGifts(tenant);
-      setGifts(data.gifts);
+      setGifts(shuffleArray(data.gifts));
     } catch (err) {
       setGiftsError(err.message || 'Falha ao carregar lista de presentes.');
     } finally {
