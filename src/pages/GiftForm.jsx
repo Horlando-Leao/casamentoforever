@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createGift, getGift, updateGift } from '../services/api';
 import ImagePreview from '../components/ImagePreview';
 import { DEFAULT_GIFTS, CATEGORIAS } from '../lib/defaultGifts';
@@ -7,8 +7,40 @@ import { DEFAULT_GIFTS, CATEGORIAS } from '../lib/defaultGifts';
 function DefaultGiftsModal({ onSelect, onClose }) {
   const [categoriaAtiva, setCategoriaAtiva] = useState('Todos');
   const [busca, setBusca] = useState('');
+  const carouselRef = useRef(null);
+  const dragState = useRef({ isDragging: false, startX: 0, startScrollLeft: 0 });
 
   const categorias = ['Todos', ...CATEGORIAS];
+
+  const handleDragStart = (event) => {
+    const container = carouselRef.current;
+    if (!container) return;
+
+    dragState.current = {
+      isDragging: true,
+      startX: event.pageX,
+      startScrollLeft: container.scrollLeft,
+    };
+
+    container.style.cursor = 'grabbing';
+    event.preventDefault();
+  };
+
+  const handleDragMove = (event) => {
+    const container = carouselRef.current;
+    if (!dragState.current.isDragging || !container) return;
+
+    const delta = event.pageX - dragState.current.startX;
+    container.scrollLeft = dragState.current.startScrollLeft - delta;
+  };
+
+  const handleDragEnd = () => {
+    const container = carouselRef.current;
+    if (!container) return;
+
+    dragState.current.isDragging = false;
+    container.style.cursor = 'grab';
+  };
 
   const filtrados = DEFAULT_GIFTS.filter((g) => {
     const matchCategoria = categoriaAtiva === 'Todos' || g.categoria === categoriaAtiva;
@@ -59,7 +91,20 @@ function DefaultGiftsModal({ onSelect, onClose }) {
           </div>
 
           {/* Categorias com scroll horizontal */}
-          <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+          <div
+            ref={carouselRef}
+            className="flex gap-2 overflow-x-auto pb-1 select-none cursor-grab active:cursor-grabbing sm:cursor-default sm:pb-0"
+            style={{
+              scrollbarWidth: 'thin',
+              msOverflowStyle: 'auto',
+              WebkitOverflowScrolling: 'touch',
+              touchAction: 'pan-x',
+            }}
+            onMouseDown={handleDragStart}
+            onMouseMove={handleDragMove}
+            onMouseLeave={handleDragEnd}
+            onMouseUp={handleDragEnd}
+          >
             {categorias.map((cat) => (
               <button
                 key={cat}
