@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getReceivedGifts, acceptGift, removeGiftReservation } from '../services/api';
 import GiftSkeleton from '../components/GiftSkeleton';
+import { buildGiftWhatsAppUrl } from '../lib/whatsapp';
 
 export default function ReceivedGifts({ tenant, onBack, showModal }) {
   const [gifts, setGifts] = useState([]);
@@ -82,8 +83,8 @@ export default function ReceivedGifts({ tenant, onBack, showModal }) {
               </svg>
             </button>
             <div>
-              <h1 className="text-2xl font-display text-text-primary">Presentes Recebidos</h1>
-              <p className="text-sm text-text-secondary mt-1">Gerencie os presentes escolhidos pelos convidados</p>
+              <h1 className="text-2xl font-display text-text-primary">Presentes Reservados</h1>
+              <p className="text-sm text-text-secondary mt-1">Gerencie os presentes reservados pelos convidados</p>
             </div>
           </div>
         </div>
@@ -119,21 +120,61 @@ export default function ReceivedGifts({ tenant, onBack, showModal }) {
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
             {gifts.map((gift) => (
               <div key={gift.id} className="bg-white rounded-2xl p-6 shadow-soft border border-cream-dark flex flex-col gap-4">
-                <div className="flex justify-between items-start">
+                {gift.imagem_url && (
+                  <div className="w-full h-48 bg-gray-50 rounded-xl overflow-hidden border border-gray-100 flex items-center justify-center">
+                    <img
+                      src={gift.imagem_url}
+                      alt={gift.nome}
+                      className="w-full h-full object-cover"
+                      onError={(e) => { e.target.style.display = 'none'; }}
+                    />
+                  </div>
+                )}
+
+                <div className="flex justify-between items-start gap-2">
                   <div>
                     <h3 className="text-xl font-bold text-text-primary">{gift.nome}</h3>
                     <p className="text-gold-dark font-bold text-lg">{formatCurrency(gift.preco)}</p>
                   </div>
                   {gift.status === 'received' ? (
-                    <span className="px-3 py-1 bg-green-100 text-green-800 text-xs font-bold rounded-full uppercase tracking-wider">
+                    <span className="px-3 py-1 bg-green-100 text-green-800 text-xs font-bold rounded-full uppercase tracking-wider shrink-0">
                       Recebido
                     </span>
                   ) : (
-                    <span className="px-3 py-1 bg-amber-100 text-amber-800 text-xs font-bold rounded-full uppercase tracking-wider">
-                      Pendente
+                    <span className="px-3 py-1 bg-amber-100 text-amber-800 text-xs font-bold rounded-full uppercase tracking-wider shrink-0">
+                      Reservado
                     </span>
                   )}
                 </div>
+
+                {gift.descricao && (
+                  <p className="text-sm text-text-secondary line-clamp-3 bg-cream/40 p-3 rounded-xl border border-cream-dark/50">
+                    {gift.descricao}
+                  </p>
+                )}
+
+                {gift.sites && gift.sites.length > 0 && gift.sites.some(s => s.url) && (
+                  <div className="space-y-1.5">
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Links de Compra:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {gift.sites.filter(s => s.url).map((site, idx) => (
+                        <a
+                          key={idx}
+                          href={site.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-semibold rounded-lg border border-amber-200/60 transition-colors"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                            <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                          </svg>
+                          {site.label || 'Ver Loja'}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-2">
                   <div className="flex items-center gap-2 text-sm text-text-secondary">
@@ -158,7 +199,7 @@ export default function ReceivedGifts({ tenant, onBack, showModal }) {
 
                 <div className="mt-auto grid grid-cols-2 gap-2 pt-2 border-t border-gray-100">
                   <a
-                    href={`https://wa.me/55${gift.reserved_by_whatsapp?.replace(/\D/g, '')}?text=Olá ${gift.reserved_by_name}, vi que você reservou o presente ${gift.nome}!`}
+                    href={buildGiftWhatsAppUrl(gift)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="col-span-2 flex justify-center items-center gap-2 bg-[#25D366] hover:bg-[#128C7E] text-white py-2.5 rounded-lg font-bold text-sm transition-colors"

@@ -361,14 +361,14 @@ export default function PublicEventDetail({ qrToken }) {
                     
                     {gift.reserved ? (
                       <button disabled className="w-full py-3.5 bg-gray-100 text-gray-400 font-semibold rounded-xl cursor-not-allowed border border-gray-200 transition-colors">
-                        Já Presenteado
+                        Já Reservado
                       </button>
                     ) : (
                       <button 
                         onClick={() => handleReserveClick(gift)}
                         className="w-full py-3.5 bg-gold hover:bg-gold-dark text-white font-semibold rounded-xl shadow-md shadow-gold/20 transition-all hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0"
                       >
-                        Presentear
+                        Reservar
                       </button>
                     )}
                   </div>
@@ -395,7 +395,7 @@ export default function PublicEventDetail({ qrToken }) {
           >
             <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6 sm:hidden"></div>
             
-            <h2 className="text-2xl font-display text-text-primary mb-4 pr-8">Presentear: {selectedGift.nome}</h2>
+            <h2 className="text-2xl font-display text-text-primary mb-4 pr-8">Reservar: {selectedGift.nome}</h2>
             <button 
               onClick={() => setSelectedGift(null)}
               className="absolute top-6 right-6 text-text-light hover:text-text-primary transition-colors"
