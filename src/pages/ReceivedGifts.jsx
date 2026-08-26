@@ -83,8 +83,8 @@ export default function ReceivedGifts({ tenant, onBack, showModal }) {
               </svg>
             </button>
             <div>
-              <h1 className="text-2xl font-display text-text-primary">Presentes Recebidos</h1>
-              <p className="text-sm text-text-secondary mt-1">Gerencie os presentes escolhidos pelos convidados</p>
+              <h1 className="text-2xl font-display text-text-primary">Presentes Reservados</h1>
+              <p className="text-sm text-text-secondary mt-1">Gerencie os presentes reservados pelos convidados</p>
             </div>
           </div>
         </div>
@@ -142,7 +142,7 @@ export default function ReceivedGifts({ tenant, onBack, showModal }) {
                     </span>
                   ) : (
                     <span className="px-3 py-1 bg-amber-100 text-amber-800 text-xs font-bold rounded-full uppercase tracking-wider shrink-0">
-                      Pendente
+                      Reservado
                     </span>
                   )}
                 </div>
