@@ -12,3 +12,11 @@ export function getNextTrackIndex(currentIndex, totalTracks = PLAYLIST.length) {
 export function toggleMuteState(currentMuted) {
   return !currentMuted;
 }
+
+export function handlePromptChoice(accepted) {
+  return {
+    showPrompt: false,
+    isMuted: !accepted,
+  };
+}
+

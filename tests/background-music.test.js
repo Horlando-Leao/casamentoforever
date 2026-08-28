@@ -22,4 +22,19 @@ test('Lógica do Player de Música de Fundo', async (t) => {
     assert.strictEqual(toggleMuteState(true), false, 'Desmutar');
     assert.strictEqual(toggleMuteState(false), true, 'Mutar');
   });
+
+  await t.test('Deve gerenciar as respostas do pop-up de convite de áudio', async () => {
+    const { handlePromptChoice } = await import('../src/lib/backgroundMusicLogic.js');
+    
+    // Aceitar música
+    const acceptResult = handlePromptChoice(true);
+    assert.strictEqual(acceptResult.showPrompt, false);
+    assert.strictEqual(acceptResult.isMuted, false);
+
+    // Recusar música
+    const declineResult = handlePromptChoice(false);
+    assert.strictEqual(declineResult.showPrompt, false);
+    assert.strictEqual(declineResult.isMuted, true);
+  });
 });
+
