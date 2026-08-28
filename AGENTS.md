@@ -24,21 +24,21 @@ Toda tarefa deve seguir esta sequência:
 - **Alterações pequenas e incrementais.** Preferir várias mudanças focadas a uma grande refatoração.
 - **Atualizar a documentação.** Ao descobrir uma nova regra, padrão ou hurdle durante o trabalho, propor a atualização do `AGENTS.md` ou do doc apropriado em `docs/`.
 
+## Contexto do projeto
+ler o documento em ./README.md
 
-## Skills disponíveis
+## Como rodar o projeto
+ler o documento em ./docs/como-rodar-o-projeot.md
 
-Antes de resolver qualquer problema, consulte as skills em `.agents/skills/`. Quando o usuário digitar **"use skill \<nome\>"**, leia e siga o SKILL.md correspondente.
+## 📄 Lista de Páginas do Sistema
 
-Quando o usuário solicitar algo que for compatível com uma skill, leia a skill para verificar se ela pode ajudar na tarefa e execute a skill.
-
-| Skill | Caminho | Descrição |
-|---|---|---|
-| Query local | .agents/skills/query-local/SKILL.MD | Executa queries SQL no Postgres local para inspecionar dados |
-| Criar skills | .agents/skills/creator-skills/SKILL.MD | Guia para criar novas skills no padrão do projeto |
-| Mermaid → SVG | .agents/skills/mermaid-to-svg/SKILL.MD | Converte diagramas Mermaid em arquivos SVG |
-| Teste local | .agents/skills/teste-local/SKILL.md | Orquestra arquitetura + test-api + query-local para validar uma feature localmente |
-| Test API | .agents/skills/test-api/SKILL.md | Gera curl completo a partir da spec Swagger local (localhost:3001) |
-| Safe Rename | .agents/skills/safe-rename/SKILL.md | Renomeia símbolo em todo o repo (incluindo .spec.ts) e valida com tsc:check |
-| review-pr | .agents/skills/review-pr/SKILL.md | Code review com critérios de arquitetura e banco |
-| pull-request | .agents/skills/pull-request/SKILL.md | Instruções para escrever uma boa descrição de PR |
-| task-criteria-review | .agents/skills/task-criteria-review/SKILL.md | Valida se o diff da branch atende aos critérios de um ticket |
+| Arquivo | Descrição / Função |
+| :--- | :--- |
+| **`Login.jsx`** | Tela de autenticação dos noivos com busca automática de casal por e-mail. |
+| **`Register.jsx`** | Tela de cadastro de novos casais (criação de conta e slug do casal). |
+| **`Dashboard.jsx`** | Painel principal privado do casal (gerenciamento dos presentes cadastrados, atalhos de compartilhamento e navegação). |
+| **`GiftForm.jsx`** | Formulário para criação e edição de presentes (nome, imagem, preço, links de lojas e descrição). |
+| **`GiftDetail.jsx`** | Visualização detalhada de um presente específico no painel privado do casal. |
+| **`ReceivedGifts.jsx`** | Central de presentes reservados pelos convidados (exibe quem reservou, contato WhatsApp, links de compra, marcação de recebido e desvinculação). |
+| **`EventForm.jsx`** | Formulário de edição dos detalhes do casamento (data, horário, endereço, link do Google Maps, Dress Code e orientações). |
+| **`PublicEventDetail.jsx`** | Página pública do convite acessada pelo convidado via QR Code ou link (exibe contagem regressiva, local no mapa, dress code e catálogo de presentes com opção de reserva). |
