@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { getInvitationByQRToken, getPublicGifts, reserveGift } from '../services/api';
 import GiftSkeleton from '../components/GiftSkeleton';
 import Countdown from '../components/Countdown';
+import BackgroundMusic from '../components/BackgroundMusic';
 import { shuffleArray } from '../lib/shuffleArray';
 
 export default function PublicEventDetail({ qrToken }) {
@@ -99,6 +100,8 @@ export default function PublicEventDetail({ qrToken }) {
 
   return (
     <div className="min-h-screen bg-cream selection:bg-rose-gold/20 relative">
+      <BackgroundMusic />
+
       {/* Promo Link */}
       <a 
         href="#/login" 
