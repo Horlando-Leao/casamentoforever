@@ -42,6 +42,11 @@ export default defineConfig(({ mode }) => ({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        // Faz o novo SW tomar controle imediato, sem aguardar reload manual
+        skipWaiting: true,
+        clientsClaim: true,
+        // Remove caches de bundles antigos automaticamente
+        cleanupOutdatedCaches: true,
       },
     }),
   ],
