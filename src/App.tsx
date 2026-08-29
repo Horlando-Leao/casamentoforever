@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getToken, logout, getNames, getTenant, getEventDetails, saveEventDetails } from './services/api';
+import { buildInvitationWhatsAppUrl } from './lib/whatsapp';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -197,6 +198,52 @@ function App() {
     }
   };
 
+  const handleShareInvitationWhatsApp = async (tenantSlug: string) => {
+    try {
+      let event;
+      try {
+        const data = await getEventDetails(tenantSlug);
+        event = data.event;
+      } catch (e) {
+        event = null;
+      }
+
+      const openWhatsApp = (currentEvent: any) => {
+        let eventToUse = currentEvent;
+        if (!eventToUse) eventToUse = {};
+
+        const token = eventToUse.qr_token;
+        const publicUrl = token
+          ? `${window.location.origin}/#/convite/${token}`
+          : window.location.origin;
+
+        const url = buildInvitationWhatsAppUrl(eventToUse, names, publicUrl);
+        window.open(url, '_blank', 'noopener,noreferrer');
+      };
+
+      if (!event || !event.endereco) {
+        showModal({
+          title: 'Adicionar Endereço?',
+          message: 'Nenhum endereço foi cadastrado. Deseja adicionar antes de enviar pelo WhatsApp?',
+          confirmLabel: 'Sim, Adicionar',
+          cancelLabel: 'Não, Enviar Assim Mesmo',
+          onConfirm: () => navigateTo('event-form', tenantSlug),
+          onCancel: () => openWhatsApp(event),
+        });
+        return;
+      }
+
+      openWhatsApp(event);
+    } catch (error: any) {
+      showModal({
+        title: 'Ops!',
+        message: error.message || 'Falha ao gerar o link do WhatsApp.',
+        type: 'alert',
+        confirmLabel: 'Entendido',
+      });
+    }
+  };
+
   const handleLogout = () => {
     logout();
     setIsAuthenticated(false);
@@ -260,6 +307,7 @@ function App() {
           onViewReceived={() => navigateTo('received-gifts', tenant)}
           onViewEvent={() => navigateTo('event-form', tenant)}
           onShareInvitation={() => handleShareInvitation(tenant)}
+          onShareInvitationWhatsApp={() => handleShareInvitationWhatsApp(tenant)}
           showModal={showModal}
         />
       )}

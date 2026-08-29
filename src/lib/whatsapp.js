@@ -47,3 +47,70 @@ export function buildGiftWhatsAppUrl(gift) {
   const message = formatGiftWhatsAppMessage(gift);
   return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 }
+
+/**
+ * Formata a mensagem de convite de casamento para WhatsApp.
+ * @param {object} event  - Dados do evento (data_evento, horario, endereco, maps_url, dress_code)
+ * @param {object} names  - { nome1, nome2 }
+ * @param {string} publicUrl - Link público do convite
+ */
+export function formatInvitationWhatsAppMessage(event, names, publicUrl) {
+  const parts = [];
+
+  // Cabeçalho
+  const nome1 = names?.nome1 ? names.nome1.charAt(0).toUpperCase() + names.nome1.slice(1).toLowerCase() : '';
+  const nome2 = names?.nome2 ? names.nome2.charAt(0).toUpperCase() + names.nome2.slice(1).toLowerCase() : '';
+  const coupleLabel = nome1 && nome2 ? `*${nome1} & ${nome2}*` : '*Nosso Casamento*';
+
+  parts.push(`💍 Convite de Casamento — ${coupleLabel}`);
+  parts.push('');
+
+  // Data
+  if (event?.data_evento) {
+    const [year, month, day] = event.data_evento.split('-');
+    const formatted = `${day}/${month}/${year}`;
+    const dateObj = new Date(`${year}-${month}-${day}T12:00:00`);
+    const weekday = dateObj.toLocaleDateString('pt-BR', { weekday: 'long' });
+    const weekdayCapitalized = weekday.charAt(0).toUpperCase() + weekday.slice(1);
+
+    let dateLine = `📅 *Data:* ${weekdayCapitalized}, ${formatted}`;
+    if (event.horario) dateLine += ` às ${event.horario}`;
+    parts.push(dateLine);
+  }
+
+  // Endereço
+  if (event?.endereco) {
+    parts.push(`📍 *Local:* ${event.endereco}`);
+  }
+
+  // Google Maps
+  if (event?.maps_url) {
+    parts.push(`🗺️ *Como chegar:* ${event.maps_url}`);
+  }
+
+  // Dress Code
+  if (event?.dress_code) {
+    parts.push(`👔 *Dress Code:* ${event.dress_code}`);
+  }
+
+  parts.push('');
+
+  // Lista de presentes + link público
+  parts.push(`🎁 *Lista de Presentes e Detalhes:*`);
+  parts.push(publicUrl);
+  parts.push('');
+
+  // Aviso de organização
+  parts.push(`⏰ _Se organize e não deixe para a última hora! Reserve um tempo na sua agenda e escolha um presente para homenagear essa data especial._ 💕`);
+
+  return parts.join('\n');
+}
+
+/**
+ * Monta a URL wa.me para compartilhar o convite (sem número — abre seleção de contato).
+ */
+export function buildInvitationWhatsAppUrl(event, names, publicUrl) {
+  const message = formatInvitationWhatsAppMessage(event, names, publicUrl);
+  return `https://wa.me/?text=${encodeURIComponent(message)}`;
+}
+
