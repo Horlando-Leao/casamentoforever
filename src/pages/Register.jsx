@@ -1,33 +1,33 @@
-import { useState } from 'react';
-import { register } from '../services/api';
+import { useState } from "react";
+import { register } from "../services/api";
 
 export default function Register({ onRegisterSuccess, onLoginClick }) {
-  const [nome1, setNome1] = useState('');
-  const [nome2, setNome2] = useState('');
-  const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
-  const [confirmSenha, setConfirmSenha] = useState('');
-  const [error, setError] = useState('');
+  const [nome1, setNome1] = useState("");
+  const [nome2, setNome2] = useState("");
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [confirmSenha, setConfirmSenha] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
       if (!nome1 || !nome2 || !email || !senha) {
-        setError('Por favor, preencha todos os campos');
+        setError("Por favor, preencha todos os campos");
         return;
       }
       if (senha !== confirmSenha) {
-        setError('As senhas não correspondem');
+        setError("As senhas não correspondem");
         return;
       }
       const tenant = await register(nome1, nome2, email, senha);
       onRegisterSuccess(tenant);
     } catch (err) {
-      setError(err.message || 'Falha ao registrar');
+      setError(err.message || "Falha ao registrar");
     } finally {
       setLoading(false);
     }
@@ -39,14 +39,17 @@ export default function Register({ onRegisterSuccess, onLoginClick }) {
       <div className="hidden md:flex md:w-1/2 bg-cream-alt relative overflow-hidden items-center justify-center">
         <div className="absolute inset-0 bg-gradient-to-br from-rose-gold/20 via-gold/10 to-transparent z-10"></div>
         <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjZmZmZmZmIj48L3JlY3Q+CjxwYXRoIGQ9Ik0wIDBMODggWk04IDBMMCA4IFoiIHN0cm9rZT0iI2U1ZTdlYiIgc3Ryb2tlLXdpZHRoPSIxIj48L3BhdGg+Cjwvc3ZnPg==')] opacity-40 z-0"></div>
-        
+
         <div className="relative z-20 text-center px-12">
           <div className="text-8xl mb-8 opacity-90 drop-shadow-lg">🥂</div>
           <h2 className="text-5xl font-display text-gold-dark mb-6 leading-tight">
-            Comece a sua<br/>jornada conosco
+            Comece a sua
+            <br />
+            jornada conosco
           </h2>
           <p className="text-xl text-text-secondary font-light">
-            Crie sua lista de presentes de forma elegante, prática e totalmente personalizada.
+            Crie sua lista de presentes de forma elegante, prática e totalmente
+            personalizada.
           </p>
         </div>
       </div>
@@ -55,18 +58,26 @@ export default function Register({ onRegisterSuccess, onLoginClick }) {
       <div className="flex-1 flex items-center justify-center px-6 py-12 md:px-12 lg:px-24 bg-white relative overflow-y-auto">
         {/* Decoração sutil mobile */}
         <div className="absolute top-0 inset-x-0 h-32 bg-gradient-to-b from-cream-alt to-transparent md:hidden"></div>
-        
+
         <div className="w-full max-w-md relative z-10 my-auto">
           <div className="text-center mb-10">
-            <div className="text-5xl md:text-6xl mb-4 inline-block drop-shadow-sm">💍</div>
-            <h1 className="text-4xl md:text-5xl font-display text-rose-gold mb-3">CasamentoForever</h1>
-            <p className="text-text-secondary font-medium tracking-wide">CRIE SUA CONTA GRÁTIS</p>
+            <div className="text-5xl md:text-6xl mb-4 inline-block drop-shadow-sm">
+              💍
+            </div>
+            <h1 className="text-4xl md:text-5xl font-display text-rose-gold mb-3">
+              CasamentoForever
+            </h1>
+            <p className="text-text-secondary font-medium tracking-wide">
+              CRIE SUA CONTA GRÁTIS
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-text-secondary mb-2 uppercase tracking-wider">Noivo(a) 1</label>
+                <label className="block text-xs font-bold text-text-secondary mb-2 uppercase tracking-wider">
+                  Noivo(a) 1
+                </label>
                 <input
                   type="text"
                   value={nome1}
@@ -77,7 +88,9 @@ export default function Register({ onRegisterSuccess, onLoginClick }) {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-text-secondary mb-2 uppercase tracking-wider">Noivo(a) 2</label>
+                <label className="block text-xs font-bold text-text-secondary mb-2 uppercase tracking-wider">
+                  Noivo(a) 2
+                </label>
                 <input
                   type="text"
                   value={nome2}
@@ -89,7 +102,9 @@ export default function Register({ onRegisterSuccess, onLoginClick }) {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-text-secondary mb-2 uppercase tracking-wider">Email</label>
+              <label className="block text-xs font-bold text-text-secondary mb-2 uppercase tracking-wider">
+                Email
+              </label>
               <input
                 type="email"
                 value={email}
@@ -100,7 +115,9 @@ export default function Register({ onRegisterSuccess, onLoginClick }) {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-text-secondary mb-2 uppercase tracking-wider">Senha</label>
+              <label className="block text-xs font-bold text-text-secondary mb-2 uppercase tracking-wider">
+                Senha
+              </label>
               <input
                 type="password"
                 value={senha}
@@ -111,7 +128,9 @@ export default function Register({ onRegisterSuccess, onLoginClick }) {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-text-secondary mb-2 uppercase tracking-wider">Confirmar senha</label>
+              <label className="block text-xs font-bold text-text-secondary mb-2 uppercase tracking-wider">
+                Confirmar senha
+              </label>
               <input
                 type="password"
                 value={confirmSenha}
@@ -123,8 +142,19 @@ export default function Register({ onRegisterSuccess, onLoginClick }) {
 
             {error && (
               <div className="p-4 bg-red-50 border border-red-100 text-red-600 rounded-xl text-sm font-medium animate-fade-in flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 shrink-0"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
                 </svg>
                 {error}
               </div>
@@ -135,13 +165,13 @@ export default function Register({ onRegisterSuccess, onLoginClick }) {
               disabled={loading}
               className="w-full bg-gold hover:bg-gold-dark disabled:bg-gray-300 text-white font-bold py-4 rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 text-lg mt-6"
             >
-              {loading ? 'Criando conta...' : 'Criar minha conta'}
+              {loading ? "Criando conta..." : "Criar minha conta"}
             </button>
           </form>
 
           <div className="mt-8 text-center">
             <p className="text-text-secondary">
-              Já tem uma conta?{' '}
+              Já tem uma conta?{" "}
               <button
                 onClick={onLoginClick}
                 className="text-gold-dark font-bold hover:text-rose-gold transition-colors ml-1"

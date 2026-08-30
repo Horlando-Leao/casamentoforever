@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
-import QRCode from 'qrcode';
+import QRCode from "qrcode";
+import { useEffect, useState } from "react";
 
 export default function QRCodeComponent({ qrToken, tenantSlug }) {
-  const [qrDataUrl, setQrDataUrl] = useState('');
+  const [qrDataUrl, setQrDataUrl] = useState("");
 
   useEffect(() => {
     if (!qrToken) return;
@@ -11,18 +11,18 @@ export default function QRCodeComponent({ qrToken, tenantSlug }) {
       try {
         const qrUrl = `${window.location.origin}/#/convite/${qrToken}`;
         const dataUrl = await QRCode.toDataURL(qrUrl, {
-          errorCorrectionLevel: 'H',
-          type: 'image/png',
+          errorCorrectionLevel: "H",
+          type: "image/png",
           width: 300,
           margin: 1,
           color: {
-            dark: '#000000',
-            light: '#FFFFFF',
+            dark: "#000000",
+            light: "#FFFFFF",
           },
         });
         setQrDataUrl(dataUrl);
       } catch (error) {
-        console.error('Error generating QR code:', error);
+        console.error("Error generating QR code:", error);
       }
     };
 
@@ -31,8 +31,8 @@ export default function QRCodeComponent({ qrToken, tenantSlug }) {
 
   const handleDownloadQR = () => {
     if (!qrDataUrl) return;
-    
-    const link = document.createElement('a');
+
+    const link = document.createElement("a");
     link.href = qrDataUrl;
     link.download = `convite-qrcode-${qrToken.slice(0, 8)}.png`;
     document.body.appendChild(link);
@@ -56,14 +56,27 @@ export default function QRCodeComponent({ qrToken, tenantSlug }) {
         onClick={handleDownloadQR}
         className="flex items-center gap-2 px-6 py-3 bg-blue-50 border border-blue-200 text-blue-700 font-bold rounded-xl hover:bg-blue-100 transition-colors shadow-sm"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+          />
         </svg>
         Baixar QR Code (PNG)
       </button>
-      
+
       <div className="w-full max-w-md">
-        <p className="text-xs font-bold text-text-secondary mb-2 uppercase tracking-wider">Link do Convite</p>
+        <p className="text-xs font-bold text-text-secondary mb-2 uppercase tracking-wider">
+          Link do Convite
+        </p>
         <div className="flex items-center gap-2 bg-gray-50 border border-cream-dark rounded-xl p-3">
           <input
             type="text"

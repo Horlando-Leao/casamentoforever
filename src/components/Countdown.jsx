@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from "react";
 
 export default function Countdown({ date, time }) {
   const [timeLeft, setTimeLeft] = useState(null);
@@ -10,7 +10,7 @@ export default function Countdown({ date, time }) {
       // Garantir que a data seja interpretada corretamente no fuso local
       // Formato esperado de date: YYYY-MM-DD
       // Formato esperado de time: HH:mm
-      const eventDate = new Date(`${date}T${time || '00:00'}:00`);
+      const eventDate = new Date(`${date}T${time || "00:00"}:00`);
       const now = new Date();
       const diff = eventDate - now;
 
@@ -42,7 +42,7 @@ export default function Countdown({ date, time }) {
   const { total, days, hours, minutes, seconds } = timeLeft;
 
   // Design "minilista e bonito"
-  
+
   if (total === 0) {
     return (
       <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-rose-gold/10 text-rose-gold rounded-full text-[11px] font-bold animate-fade-in border border-rose-gold/20">
@@ -57,8 +57,10 @@ export default function Countdown({ date, time }) {
     return (
       <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-gold/10 text-gold-dark rounded-full text-[11px] font-bold animate-fade-in border border-gold/20">
         <span className="opacity-60 font-medium">Faltam</span>
-        <span className="bg-gold-dark text-white px-1.5 py-0.5 rounded-md text-[10px] min-w-[20px] text-center">{days}</span>
-        <span>{days === 1 ? 'dia' : 'dias'}</span>
+        <span className="bg-gold-dark text-white px-1.5 py-0.5 rounded-md text-[10px] min-w-[20px] text-center">
+          {days}
+        </span>
+        <span>{days === 1 ? "dia" : "dias"}</span>
       </div>
     );
   }
@@ -66,13 +68,21 @@ export default function Countdown({ date, time }) {
   // Se for o último dia (menos de 24h), mostra horas
   return (
     <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-rose-gold/10 text-rose-gold rounded-full text-[11px] font-bold animate-fade-in border border-rose-gold/20">
-      <span className="opacity-60 font-medium uppercase tracking-tighter">Últimas</span>
+      <span className="opacity-60 font-medium uppercase tracking-tighter">
+        Últimas
+      </span>
       <div className="flex gap-1 tabular-nums items-center">
-        <span className="bg-rose-gold text-white px-1 py-0.5 rounded text-[10px]">{String(hours).padStart(2, '0')}</span>
+        <span className="bg-rose-gold text-white px-1 py-0.5 rounded text-[10px]">
+          {String(hours).padStart(2, "0")}
+        </span>
         <span className="animate-pulse opacity-50">:</span>
-        <span className="bg-rose-gold text-white px-1 py-0.5 rounded text-[10px]">{String(minutes).padStart(2, '0')}</span>
+        <span className="bg-rose-gold text-white px-1 py-0.5 rounded text-[10px]">
+          {String(minutes).padStart(2, "0")}
+        </span>
         <span className="animate-pulse opacity-50">:</span>
-        <span className="bg-rose-gold text-white px-1 py-0.5 rounded text-[10px]">{String(seconds).padStart(2, '0')}</span>
+        <span className="bg-rose-gold text-white px-1 py-0.5 rounded text-[10px]">
+          {String(seconds).padStart(2, "0")}
+        </span>
       </div>
     </div>
   );

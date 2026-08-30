@@ -1,7 +1,7 @@
 export const PLAYLIST = [
-  '/audio/track1.mp3',
-  '/audio/track2.mp3',
-  '/audio/track3.mp3'
+  "/audio/track1.mp3",
+  "/audio/track2.mp3",
+  "/audio/track3.mp3",
 ];
 
 export function getNextTrackIndex(currentIndex, totalTracks = PLAYLIST.length) {
@@ -19,4 +19,3 @@ export function handlePromptChoice(accepted) {
     isMuted: !accepted,
   };
 }
-

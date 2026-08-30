@@ -1,7 +1,7 @@
 export default function GiftCard({ gift, onView, onEdit, onDelete }) {
   const displayPix = gift.chave_pix
     ? gift.chave_pix.length > 20
-      ? gift.chave_pix.substring(0, 17) + '...'
+      ? gift.chave_pix.substring(0, 17) + "..."
       : gift.chave_pix
     : null;
 
@@ -18,7 +18,9 @@ export default function GiftCard({ gift, onView, onEdit, onDelete }) {
             src={gift.imagem_url}
             alt={gift.nome}
             className="w-full h-full object-cover group-hover:scale-105 transition duration-500 relative z-10"
-            onError={(e) => { e.target.style.display = 'none'; }}
+            onError={(e) => {
+              e.target.style.display = "none";
+            }}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-4xl group-hover:scale-110 transition duration-500 relative z-10">
@@ -43,14 +45,21 @@ export default function GiftCard({ gift, onView, onEdit, onDelete }) {
 
         {gift.preco && (
           <p className="text-gold-dark font-bold text-lg mb-3">
-            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(gift.preco)}
+            {new Intl.NumberFormat("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            }).format(gift.preco)}
           </p>
         )}
 
         {displayPix && (
           <div className="mb-4 p-3 bg-cream rounded-xl border border-gold-light/30">
-            <p className="text-xs text-text-secondary mb-1 uppercase tracking-wider font-semibold">Chave PIX</p>
-            <p className="text-sm font-mono text-text-primary truncate">{displayPix}</p>
+            <p className="text-xs text-text-secondary mb-1 uppercase tracking-wider font-semibold">
+              Chave PIX
+            </p>
+            <p className="text-sm font-mono text-text-primary truncate">
+              {displayPix}
+            </p>
           </div>
         )}
 

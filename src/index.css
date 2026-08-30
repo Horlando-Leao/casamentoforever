@@ -45,10 +45,6 @@ select:focus {
   .pb-safe {
     padding-bottom: max(env(safe-area-inset-bottom), 1rem);
   }
-  .pb-safe-nav {
-    /* Padding bottom que acomoda o BottomNav (aprox 72px) + safe area */
-    padding-bottom: max(calc(env(safe-area-inset-bottom) + 80px), 80px);
-  }
   .px-safe {
     padding-left: max(env(safe-area-inset-left), 1rem);
     padding-right: max(env(safe-area-inset-right), 1rem);
