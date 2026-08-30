@@ -1,5 +1,10 @@
-import { useState, useRef, useEffect } from 'react';
-import { PLAYLIST, getNextTrackIndex, toggleMuteState, handlePromptChoice } from '../lib/backgroundMusicLogic';
+import { useEffect, useRef, useState } from "react";
+import {
+  getNextTrackIndex,
+  handlePromptChoice,
+  PLAYLIST,
+  toggleMuteState,
+} from "../lib/backgroundMusicLogic";
 
 export default function BackgroundMusic() {
   const [isMuted, setIsMuted] = useState(true);
@@ -21,7 +26,7 @@ export default function BackgroundMusic() {
     if (!audioRef.current) {
       const audio = new Audio(PLAYLIST[currentTrackIndex]);
       audio.volume = 0.6;
-      
+
       audio.onended = () => {
         handleNextTrack();
       };
@@ -29,8 +34,8 @@ export default function BackgroundMusic() {
       audioRef.current = audio;
     }
 
-    audioRef.current.play().catch(err => {
-      console.log('Autoplay prevented or playback error:', err);
+    audioRef.current.play().catch((err) => {
+      console.log("Autoplay prevented or playback error:", err);
     });
   };
 
@@ -67,8 +72,8 @@ export default function BackgroundMusic() {
 
     if (audioRef.current) {
       audioRef.current.src = PLAYLIST[nextIndex];
-      audioRef.current.play().catch(err => {
-        console.log('Error playing next track:', err);
+      audioRef.current.play().catch((err) => {
+        console.log("Error playing next track:", err);
       });
     }
   };
@@ -81,7 +86,9 @@ export default function BackgroundMusic() {
           <div className="flex items-start justify-between gap-3 mb-2">
             <div className="flex items-center gap-2">
               <span className="text-xl">🎶</span>
-              <h3 className="text-sm font-bold text-text-primary">Música de Fundo</h3>
+              <h3 className="text-sm font-bold text-text-primary">
+                Música de Fundo
+              </h3>
             </div>
             <button
               onClick={() => handlePromptResponse(false)}
@@ -94,7 +101,8 @@ export default function BackgroundMusic() {
           </div>
 
           <p className="text-xs text-text-secondary leading-relaxed mb-4">
-            Deseja ouvir uma música agradável enquanto escolhe os presentes para os noivos? ✨
+            Deseja ouvir uma música agradável enquanto escolhe os presentes para
+            os noivos? ✨
           </p>
 
           <div className="flex items-center gap-2">
@@ -118,12 +126,14 @@ export default function BackgroundMusic() {
       <div className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-40">
         <button
           onClick={handleToggleMute}
-          title={isMuted ? 'Tocar música de fundo' : 'Silenciar música'}
-          aria-label={isMuted ? 'Ativar som de fundo' : 'Silenciar som de fundo'}
+          title={isMuted ? "Tocar música de fundo" : "Silenciar música"}
+          aria-label={
+            isMuted ? "Ativar som de fundo" : "Silenciar som de fundo"
+          }
           className={`group flex items-center gap-2.5 px-4 py-3 rounded-full backdrop-blur-md shadow-floating border transition-all duration-300 ${
             isMuted
-              ? 'bg-white/90 border-cream-dark text-text-secondary hover:text-text-primary hover:border-gold-light'
-              : 'bg-gradient-to-r from-white/95 to-cream-alt/95 border-gold/40 text-gold-dark ring-2 ring-gold/20 shadow-gold/10'
+              ? "bg-white/90 border-cream-dark text-text-secondary hover:text-text-primary hover:border-gold-light"
+              : "bg-gradient-to-r from-white/95 to-cream-alt/95 border-gold/40 text-gold-dark ring-2 ring-gold/20 shadow-gold/10"
           }`}
         >
           {/* Equalizer animation when active */}
@@ -137,18 +147,44 @@ export default function BackgroundMusic() {
 
           {/* Audio Icon (Speaker with waves / Speaker Muted) */}
           {isMuted ? (
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 opacity-70 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 opacity-70 group-hover:opacity-100 transition-opacity"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"
+              />
             </svg>
           ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gold-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 text-gold-dark"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
+              />
             </svg>
           )}
 
           <span className="text-xs font-bold tracking-wide">
-            {isMuted ? 'Música' : 'Tocando'}
+            {isMuted ? "Música" : "Tocando"}
           </span>
         </button>
       </div>
